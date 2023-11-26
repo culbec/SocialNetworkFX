@@ -101,6 +101,6 @@ public class User extends Entity<UUID> {
 
     @Override
     public String toString() {
-        return this.id + " " + this.firstName + " " + this.lastName + " " + this.email;
+        return this.firstName + " " + this.lastName + " " + this.email;
     }
 }

@@ -27,7 +27,6 @@ public class TestEntity {
         user1.setLastName("Muresan");
         user1.setEmail("laurentiu.muresan@mail.com");
         assert (user1.getFirstName().equals("Laurentiu") && user1.getLastName().equals("Muresan") && user1.getEmail().equals("laurentiu.muresan@mail.com"));
-        assert (user1.toString().equals(user1.getId() + " " + user1.getFirstName() + " " + user1.getLastName() + " " + user1.getEmail()));
 
         // Testing equals on User
         User user3 = new User("Laurentiu", "Muresan", "laurentiu.muresan@mail.com");

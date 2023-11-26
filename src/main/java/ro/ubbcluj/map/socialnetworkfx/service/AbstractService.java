@@ -1,9 +1,6 @@
 package ro.ubbcluj.map.socialnetworkfx.service;
 
-import ro.ubbcluj.map.socialnetworkfx.entity.Entity;
-import ro.ubbcluj.map.socialnetworkfx.entity.Friendship;
-import ro.ubbcluj.map.socialnetworkfx.entity.Tuple;
-import ro.ubbcluj.map.socialnetworkfx.entity.User;
+import ro.ubbcluj.map.socialnetworkfx.entity.*;
 import ro.ubbcluj.map.socialnetworkfx.exception.RepositoryException;
 import ro.ubbcluj.map.socialnetworkfx.exception.ServiceException;
 
@@ -121,4 +118,29 @@ public interface AbstractService<ID> {
      * @return List of users for which the last name contains a given string.
      */
     List<User> usersWithStringInLastName(String string) throws ServiceException;
+
+    /**
+     * @param userId User ID of the user that received friend requests.
+     * @return A list with all friend requests.
+     */
+    List<FriendRequest> getFriendRequestsOfUser(ID userId);
+
+    /**
+     * Sends a friend request from a user to another.
+     * @param user1 User that sends the friend request.
+     * @param user2 User that receives the friend request.
+     */
+    void sendFriendRequest(User user1, User user2);
+
+    /**
+     * Accepts a friend request between to users and make the two users friends.
+     * @param friendRequest Friend request between two users.
+     */
+    void acceptFriendRequest(FriendRequest friendRequest);
+
+    /**
+     * Rejects a friend request between two users.
+     * @param friendRequest Friend request between two users.
+     */
+    void rejectFriendRequest(FriendRequest friendRequest);
 }

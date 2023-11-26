@@ -40,14 +40,14 @@ public abstract class DBRepository<ID, E extends Entity<ID>> implements Reposito
      *
      * @return SQL Interrogation for counting the rows in a table.
      */
-    public abstract PreparedStatement statementCount(Connection connection) throws RepositoryException;
+    protected abstract PreparedStatement statementCount(Connection connection) throws RepositoryException;
 
     /**
      * Returns the SQL Interrogation for selecting all entries in a table.
      *
      * @return SQL Interrogation for selecting all entries in a table.
      */
-    public abstract PreparedStatement statementSelectAll(Connection connection) throws RepositoryException;
+    protected abstract PreparedStatement statementSelectAll(Connection connection) throws RepositoryException;
 
     /**
      * Returns the SQL Interrogation for selection by ID.
@@ -55,7 +55,7 @@ public abstract class DBRepository<ID, E extends Entity<ID>> implements Reposito
      * @param id ID on which the interrogation will proceed.
      * @return SQL Interrogation for selection by ID.
      */
-    public abstract PreparedStatement statementSelectOnID(Connection connection, ID id) throws RepositoryException;
+    protected abstract PreparedStatement statementSelectOnID(Connection connection, ID id) throws RepositoryException;
 
     /**
      * Returns the SQL Interrogation for selection by fields.
@@ -63,7 +63,7 @@ public abstract class DBRepository<ID, E extends Entity<ID>> implements Reposito
      * @param entity Entity on which the interrogation will proceed.
      * @return SQL Interrogation for selection by fields.
      */
-    public abstract PreparedStatement statementSelectOnFields(Connection connection, E entity) throws RepositoryException;
+    protected abstract PreparedStatement statementSelectOnFields(Connection connection, E entity) throws RepositoryException;
 
     /**
      * Returns the SQL Interrogation for inserting into a table.
@@ -71,7 +71,7 @@ public abstract class DBRepository<ID, E extends Entity<ID>> implements Reposito
      * @param entity Entity on which the interrogation will proceed.
      * @return SQL Interrogation for inserting into a table.
      */
-    public abstract PreparedStatement statementInsert(Connection connection, E entity) throws RepositoryException;
+    protected abstract PreparedStatement statementInsert(Connection connection, E entity) throws RepositoryException;
 
     /**
      * Returns the SQL Interrogation for deleting from a table.
@@ -79,7 +79,7 @@ public abstract class DBRepository<ID, E extends Entity<ID>> implements Reposito
      * @param id ID on which the interrogation will proceed.
      * @return SQL Interrogation for deleting from a table.
      */
-    public abstract PreparedStatement statementDelete(Connection connection, ID id) throws RepositoryException;
+    protected abstract PreparedStatement statementDelete(Connection connection, ID id) throws RepositoryException;
 
     /**
      * Returns the SQL Interrogation for updating rows in a table.
@@ -87,7 +87,7 @@ public abstract class DBRepository<ID, E extends Entity<ID>> implements Reposito
      * @param entity Entity on which the interrogation will proceed.
      * @return SQL Interrogation for updating rows in table.
      */
-    public abstract PreparedStatement statementUpdate(Connection connection, E entity) throws RepositoryException;
+    protected abstract PreparedStatement statementUpdate(Connection connection, E entity) throws RepositoryException;
 
     /**
      * Connects to the database.

@@ -16,9 +16,9 @@ public class SocialNetworkApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(SocialNetworkApplication.class.getResource("views/social_network-view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(SocialNetworkApplication.class.getResource("views/main-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
-        stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("images/mascot.png"))));
+        stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("images/mascot.jpg"))));
         stage.setTitle("Social Network");
         stage.setScene(scene);
         stage.show();

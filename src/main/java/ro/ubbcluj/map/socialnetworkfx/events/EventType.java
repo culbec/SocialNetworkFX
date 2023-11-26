@@ -6,5 +6,8 @@ package ro.ubbcluj.map.socialnetworkfx.events;
 public enum EventType {
     ADD_USER,
     UPDATE_USER,
-    REMOVE_USER
+    REMOVE_USER,
+
+    ADD_FRIENDSHIP,
+    REMOVE_FRIENDSHIP
 }

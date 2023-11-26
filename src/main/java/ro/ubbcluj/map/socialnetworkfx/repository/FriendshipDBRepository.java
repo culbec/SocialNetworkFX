@@ -13,7 +13,7 @@ public class FriendshipDBRepository extends DBRepository<Tuple<UUID, UUID>, Frie
     }
 
     @Override
-    public PreparedStatement statementCount(Connection connection) throws RepositoryException {
+    protected PreparedStatement statementCount(Connection connection) throws RepositoryException {
         try {
             return connection.prepareStatement("select COUNT(*) from friendships");
         } catch (SQLException sqlException) {
@@ -22,7 +22,7 @@ public class FriendshipDBRepository extends DBRepository<Tuple<UUID, UUID>, Frie
     }
 
     @Override
-    public PreparedStatement statementSelectAll(Connection connection) throws RepositoryException {
+    protected PreparedStatement statementSelectAll(Connection connection) throws RepositoryException {
         try {
             return connection.prepareStatement("select * from friendships");
         } catch (SQLException sqlException) {
@@ -46,11 +46,11 @@ public class FriendshipDBRepository extends DBRepository<Tuple<UUID, UUID>, Frie
     }
 
     @Override
-    public PreparedStatement statementSelectOnID(Connection connection, Tuple<UUID, UUID> id) throws RepositoryException {
+    protected PreparedStatement statementSelectOnID(Connection connection, Tuple<UUID, UUID> id) throws RepositoryException {
         String sql = "select * from friendships where (id_user1 = ? AND id_user2 = ?) OR (id_user1 = ? AND id_user2 = ?)";
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
-            this.setIdStatement(statement, id, 1);
+            setIdStatement(statement, id, 1);
             return statement;
         } catch (SQLException sqlException) {
             throw new RepositoryException(sqlException.getMessage());
@@ -58,11 +58,11 @@ public class FriendshipDBRepository extends DBRepository<Tuple<UUID, UUID>, Frie
     }
 
     @Override
-    public PreparedStatement statementSelectOnFields(Connection connection, Friendship friendship) throws RepositoryException {
+    protected PreparedStatement statementSelectOnFields(Connection connection, Friendship friendship) throws RepositoryException {
         String sql = "select * from friendships where (id_user1 = ? AND id_user2 = ?) OR (id_user1 = ? AND id_user2 = ?) AND date = ?";
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
-            this.setIdStatement(statement, friendship.getId(), 1);
+            setIdStatement(statement, friendship.getId(), 1);
             statement.setObject(5, friendship.getFriendshipDate());
             return statement;
         } catch (SQLException sqlException) {
@@ -71,7 +71,7 @@ public class FriendshipDBRepository extends DBRepository<Tuple<UUID, UUID>, Frie
     }
 
     @Override
-    public PreparedStatement statementInsert(Connection connection, Friendship friendship) throws RepositoryException {
+    protected PreparedStatement statementInsert(Connection connection, Friendship friendship) throws RepositoryException {
         String sql = "insert into friendships(id_user1, id_user2, date) values(?, ?, ?)";
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
@@ -85,11 +85,11 @@ public class FriendshipDBRepository extends DBRepository<Tuple<UUID, UUID>, Frie
     }
 
     @Override
-    public PreparedStatement statementDelete(Connection connection, Tuple<UUID, UUID> id) throws RepositoryException {
+    protected PreparedStatement statementDelete(Connection connection, Tuple<UUID, UUID> id) throws RepositoryException {
         String sql = "delete from friendships where (id_user1 = ? AND id_user2 = ?) OR (id_user1 = ? AND id_user2 = ?)";
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
-            this.setIdStatement(statement, id, 1);
+            setIdStatement(statement, id, 1);
             return statement;
         } catch (SQLException sqlException) {
             throw new RepositoryException(sqlException.getMessage());
@@ -97,12 +97,12 @@ public class FriendshipDBRepository extends DBRepository<Tuple<UUID, UUID>, Frie
     }
 
     @Override
-    public PreparedStatement statementUpdate(Connection connection, Friendship friendship) throws RepositoryException {
+    protected PreparedStatement statementUpdate(Connection connection, Friendship friendship) throws RepositoryException {
         String sql = "update friendships set date = ? where (id_user1 = ? AND id_user2 = ?) OR (id_user2 = ? AND id_user1 = ?)";
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setObject(1, friendship.getFriendshipDate());
-            this.setIdStatement(statement, friendship.getId(), 2);
+            setIdStatement(statement, friendship.getId(), 2);
             return statement;
         } catch (SQLException sqlException) {
             throw new RepositoryException(sqlException.getMessage());

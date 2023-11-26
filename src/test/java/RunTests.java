@@ -14,6 +14,7 @@ public class RunTests {
 
         TestDBRepository.runUserDBRepository();
         TestDBRepository.runFriendshipDBRepository();
+        TestDBRepository.runFriendrequestDBRepository();
 
         System.out.println("All tests passed at: " + DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss").format(LocalDateTime.now()));
     }

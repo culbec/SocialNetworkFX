@@ -1,14 +1,17 @@
 package ro.ubbcluj.map.socialnetworkfx.service;
 
+import ro.ubbcluj.map.socialnetworkfx.entity.FriendRequest;
 import ro.ubbcluj.map.socialnetworkfx.entity.Friendship;
 import ro.ubbcluj.map.socialnetworkfx.entity.Tuple;
 import ro.ubbcluj.map.socialnetworkfx.entity.User;
 import ro.ubbcluj.map.socialnetworkfx.events.EventType;
+import ro.ubbcluj.map.socialnetworkfx.events.FriendshipEvent;
 import ro.ubbcluj.map.socialnetworkfx.events.SocialNetworkEvent;
-import ro.ubbcluj.map.socialnetworkfx.events.UserChangeEvent;
+import ro.ubbcluj.map.socialnetworkfx.events.UserEvent;
 import ro.ubbcluj.map.socialnetworkfx.exception.RepositoryException;
 import ro.ubbcluj.map.socialnetworkfx.exception.ServiceException;
 import ro.ubbcluj.map.socialnetworkfx.exception.ValidatorException;
+import ro.ubbcluj.map.socialnetworkfx.repository.FriendRequestDBRepository;
 import ro.ubbcluj.map.socialnetworkfx.repository.Repository;
 import ro.ubbcluj.map.socialnetworkfx.repository.UserDBRepository;
 import ro.ubbcluj.map.socialnetworkfx.utility.Graph;
@@ -17,6 +20,7 @@ import ro.ubbcluj.map.socialnetworkfx.utility.observer.Observer;
 import ro.ubbcluj.map.socialnetworkfx.validator.FriendshipValidator;
 import ro.ubbcluj.map.socialnetworkfx.validator.UserValidator;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -26,13 +30,18 @@ public class Service implements AbstractService<UUID>, Observable<SocialNetworkE
     private final Repository<UUID, User> userRepository;
     // Repository that stores Friendships.
     private final Repository<Tuple<UUID, UUID>, Friendship> friendshipRepository;
+    // Repository that stores Friend Requests.
+    private final Repository<Tuple<Tuple<UUID, UUID>, LocalDateTime>, FriendRequest> friendRequestRepository;
 
     // Set of observers to the Service.
     private final Set<Observer<SocialNetworkEvent>> observers = new HashSet<>();
 
-    public Service(Repository<UUID, User> userRepo, Repository<Tuple<UUID, UUID>, Friendship> friendshipRepo) {
+    public Service(Repository<UUID, User> userRepo,
+                   Repository<Tuple<UUID, UUID>, Friendship> friendshipRepo,
+                   Repository<Tuple<Tuple<UUID, UUID>, LocalDateTime>, FriendRequest> friendRequestRepository) {
         this.userRepository = userRepo;
         this.friendshipRepository = friendshipRepo;
+        this.friendRequestRepository = friendRequestRepository;
     }
 
     @Override
@@ -59,7 +68,7 @@ public class Service implements AbstractService<UUID>, Observable<SocialNetworkE
         }
 
         // Notifying the observers with the event of adding that occurred.
-        this.notify(new UserChangeEvent(EventType.ADD_USER, user, null));
+        this.notify(new UserEvent(EventType.ADD_USER, user, null));
     }
 
     @Override
@@ -86,7 +95,7 @@ public class Service implements AbstractService<UUID>, Observable<SocialNetworkE
         });
 
         // Notifying the observers with the event of removing that occurred.
-        this.notify(new UserChangeEvent(EventType.REMOVE_USER, null, deleted.get()));
+        this.notify(new UserEvent(EventType.REMOVE_USER, null, deleted.get()));
 
         // Returning the deleted user.
         return deleted.get();
@@ -111,7 +120,7 @@ public class Service implements AbstractService<UUID>, Observable<SocialNetworkE
             }
 
             // Notifying the observers with the event of updating that occurred.
-            this.notify(new UserChangeEvent(EventType.UPDATE_USER, user, old.get()));
+            this.notify(new UserEvent(EventType.UPDATE_USER, user, old.get()));
 
             // Returning the old user.
             return old.get();
@@ -167,6 +176,13 @@ public class Service implements AbstractService<UUID>, Observable<SocialNetworkE
     }
 
     @Override
+    public List<FriendRequest> getFriendRequestsOfUser(UUID userId) {
+        return StreamSupport.stream(this.friendRequestRepository.getAll().spliterator(), false)
+                .filter(friendRequest -> friendRequest.getIdTo().equals(userId) && friendRequest.getStatus().equals("pending"))
+                .toList();
+    }
+
+    @Override
     public void addFriendship(UUID id1, UUID id2) throws ServiceException {
         try {
             // Initializing a friendship.
@@ -179,6 +195,9 @@ public class Service implements AbstractService<UUID>, Observable<SocialNetworkE
             if (this.friendshipRepository.save(friendship).isPresent()) {
                 throw new ServiceException("A friendship with the same ID already exists!");
             }
+
+            // Sending an event for the observers.
+            this.notify(new FriendshipEvent(EventType.ADD_FRIENDSHIP, null, new Tuple<>(id1, id2)));
         } catch (ValidatorException | RepositoryException exception) {
             throw new ServiceException("Couldn't add friendship.", exception);
         }
@@ -202,6 +221,9 @@ public class Service implements AbstractService<UUID>, Observable<SocialNetworkE
         } else {
             this.friendshipRepository.delete(friendship.get().getId());
         }
+
+        // Notifying the observers.
+        this.notify(new FriendshipEvent(EventType.REMOVE_FRIENDSHIP, new Tuple<>(id1, id2), null));
 
         // Returning the deleted friendship.
         return friendship.get();
@@ -324,6 +346,57 @@ public class Service implements AbstractService<UUID>, Observable<SocialNetworkE
             return userDBRepository.usersLastNameContainsString(string);
         } catch (RepositoryException repositoryException) {
             throw new ServiceException(repositoryException.getMessage());
+        }
+    }
+
+    @Override
+    public void sendFriendRequest(User user1, User user2) {
+        // Excluding cases when the values are not parsed -> null.
+        if (user1 == null || user2 == null) {
+            throw new ServiceException("Null parameter!");
+        }
+        // Excluding cases when the user tries to send a friend request to itself.
+        if (user1.equals(user2)) {
+            throw new ServiceException("Cannot send friend request to the same user!");
+        }
+        // Excluding cases when the users are already friends.
+        if (this.getFriendsOf(user2.getId()).contains(user1)) {
+            throw new ServiceException("The users are already friends!");
+        }
+
+        // Verifying if there is already a pending friend request between the two users.
+        try {
+            if (((FriendRequestDBRepository) this.friendRequestRepository).verifyPending(user1.getId(), user2.getId())) {
+                throw new ServiceException("There is already a pending friend request between the two users!");
+            }
+        } catch (RepositoryException rE) {
+            throw new ServiceException(rE.getMessage());
+        }
+
+        // If not, we can proceed on sending the friend request.
+        this.friendRequestRepository.save(new FriendRequest(user1.getId(), user2.getId(), "pending"));
+    }
+
+    @Override
+    public void acceptFriendRequest(FriendRequest friendRequest) {
+        // Verifying that the friend request is not null.
+        if (friendRequest != null) {
+            // Updating the friend request internally.
+            FriendRequest newFriendRequest = new FriendRequest(friendRequest.getIdFrom(), friendRequest.getIdTo(), "accepted", friendRequest.getDate());
+            this.friendRequestRepository.update(newFriendRequest);
+
+            // Making the two users friends.
+            this.addFriendship(friendRequest.getIdFrom(), friendRequest.getIdTo());
+        }
+    }
+
+    @Override
+    public void rejectFriendRequest(FriendRequest friendRequest) {
+        // Verifying that the friend request is not null.
+        if (friendRequest != null) {
+            // Updating the status of the friend request.
+            FriendRequest newFriendRequest = new FriendRequest(friendRequest.getIdFrom(), friendRequest.getIdTo(), "rejected", friendRequest.getDate());
+            this.friendRequestRepository.update(newFriendRequest);
         }
     }
 

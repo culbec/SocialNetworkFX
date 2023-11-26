@@ -4,109 +4,112 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-
-<BorderPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ro.ubbcluj.map.socialnetworkfx.controllers.UserUpdateDialogue">
-   <top>
-      <Label text="Update User" textAlignment="CENTER" underline="true" BorderPane.alignment="CENTER">
-         <font>
-            <Font name="Inconsolata" size="20.0" />
-         </font>
-         <BorderPane.margin>
-            <Insets bottom="10.0" top="20.0" />
-         </BorderPane.margin>
-      </Label>
-   </top>
-   <center>
-      <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0" BorderPane.alignment="CENTER">
-         <BorderPane.margin>
-            <Insets bottom="20.0" left="50.0" right="50.0" top="20.0"/>
-         </BorderPane.margin>
-         <VBox layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
-            <Label text="ID">
-               <VBox.margin>
-                  <Insets/>
-               </VBox.margin>
-               <font>
-                  <Font name="Inconsolata" size="14.0"/>
-               </font>
-            </Label>
-            <TextField fx:id="idField" editable="false" opacity="0.5">
-               <padding>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
-               </padding>
-            </TextField>
-         </VBox>
-         <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0">
-            <Label text="New First Name">
-               <VBox.margin>
-                  <Insets/>
-               </VBox.margin>
-               <font>
-                  <Font name="Inconsolata" size="14.0"/>
-               </font>
-            </Label>
-            <TextField fx:id="firstNameField" promptText="John">
-               <padding>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
-               </padding>
-            </TextField>
-         </VBox>
-         <VBox layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
-            <Label text="New Last Name">
-               <VBox.margin>
-                  <Insets/>
-               </VBox.margin>
-               <font>
-                  <Font name="Inconsolata" size="14.0"/>
-               </font>
-            </Label>
-            <TextField fx:id="lastNameField" promptText="Snow">
-               <padding>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
-               </padding>
-            </TextField>
-         </VBox>
-         <VBox layoutX="10.0" layoutY="163.0" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
-            <Label text="New Email">
-               <VBox.margin>
-                  <Insets/>
-               </VBox.margin>
-               <font>
-                  <Font name="Inconsolata" size="14.0"/>
-               </font>
-            </Label>
-            <TextField fx:id="emailField" promptText="example@domain.com">
-               <font>
-                  <Font name="Droid Sans Mono" size="13.0"/>
-               </font>
-               <padding>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
-               </padding>
-            </TextField>
-         </VBox>
-         <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="30.0">
-            <VBox.margin>
-               <Insets bottom="5.0" top="20.0"/>
-            </VBox.margin>
-            <Button mnemonicParsing="false" onAction="#handleUpdate" prefHeight="20.0" prefWidth="80.0" text="Update"
-                    textAlignment="CENTER" underline="true">
-               <padding>
-                  <Insets bottom="10.0" left="5.0" right="5.0" top="10.0"/>
-               </padding>
-               <font>
-                  <Font name="Inconsolata" size="14.0"/>
-               </font>
-            </Button>
-            <Button mnemonicParsing="false" onAction="#handleCancel" prefHeight="20.0" prefWidth="80.0" text="Cancel"
-                    textAlignment="CENTER" underline="true">
-               <font>
-                  <Font name="Inconsolata" size="14.0"/>
-               </font>
-               <padding>
-                  <Insets bottom="10.0" left="5.0" right="5.0" top="10.0"/>
-               </padding>
-            </Button>
-         </HBox>
-      </VBox>
-   </center>
+<BorderPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.14-internal"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="ro.ubbcluj.map.socialnetworkfx.controllers.UserUpdateDialogue">
+    <top>
+        <Label text="Update User" textAlignment="CENTER" underline="true" BorderPane.alignment="CENTER">
+            <font>
+                <Font name="Inconsolata" size="20.0"/>
+            </font>
+            <BorderPane.margin>
+                <Insets bottom="10.0" top="20.0"/>
+            </BorderPane.margin>
+        </Label>
+    </top>
+    <center>
+        <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0" BorderPane.alignment="CENTER">
+            <BorderPane.margin>
+                <Insets bottom="20.0" left="50.0" right="50.0" top="20.0"/>
+            </BorderPane.margin>
+            <VBox layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+                <Label text="ID">
+                    <VBox.margin>
+                        <Insets/>
+                    </VBox.margin>
+                    <font>
+                        <Font name="Inconsolata" size="14.0"/>
+                    </font>
+                </Label>
+                <TextField fx:id="idField" editable="false" opacity="0.5">
+                    <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                    </padding>
+                </TextField>
+            </VBox>
+            <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+                <Label text="New First Name">
+                    <VBox.margin>
+                        <Insets/>
+                    </VBox.margin>
+                    <font>
+                        <Font name="Inconsolata" size="14.0"/>
+                    </font>
+                </Label>
+                <TextField fx:id="firstNameField" promptText="John">
+                    <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                    </padding>
+                </TextField>
+            </VBox>
+            <VBox layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+                <Label text="New Last Name">
+                    <VBox.margin>
+                        <Insets/>
+                    </VBox.margin>
+                    <font>
+                        <Font name="Inconsolata" size="14.0"/>
+                    </font>
+                </Label>
+                <TextField fx:id="lastNameField" promptText="Snow">
+                    <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                    </padding>
+                </TextField>
+            </VBox>
+            <VBox layoutX="10.0" layoutY="163.0" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+                <Label text="New Email">
+                    <VBox.margin>
+                        <Insets/>
+                    </VBox.margin>
+                    <font>
+                        <Font name="Inconsolata" size="14.0"/>
+                    </font>
+                </Label>
+                <TextField fx:id="emailField" promptText="example@domain.com">
+                    <font>
+                        <Font name="Droid Sans Mono" size="13.0"/>
+                    </font>
+                    <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                    </padding>
+                </TextField>
+            </VBox>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="30.0">
+                <VBox.margin>
+                    <Insets bottom="5.0" top="20.0"/>
+                </VBox.margin>
+                <Button mnemonicParsing="false" onAction="#handleUpdate" prefHeight="20.0" prefWidth="80.0"
+                        text="Update"
+                        textAlignment="CENTER" underline="true">
+                    <padding>
+                        <Insets bottom="10.0" left="5.0" right="5.0" top="10.0"/>
+                    </padding>
+                    <font>
+                        <Font name="Inconsolata" size="14.0"/>
+                    </font>
+                </Button>
+                <Button mnemonicParsing="false" onAction="#handleCancel" prefHeight="20.0" prefWidth="80.0"
+                        text="Cancel"
+                        textAlignment="CENTER" underline="true">
+                    <font>
+                        <Font name="Inconsolata" size="14.0"/>
+                    </font>
+                    <padding>
+                        <Insets bottom="10.0" left="5.0" right="5.0" top="10.0"/>
+                    </padding>
+                </Button>
+            </HBox>
+        </VBox>
+    </center>
 </BorderPane>

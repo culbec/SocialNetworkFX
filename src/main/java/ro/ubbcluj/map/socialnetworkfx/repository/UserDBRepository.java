@@ -17,7 +17,7 @@ public class UserDBRepository extends DBRepository<UUID, User> {
     }
 
     @Override
-    public PreparedStatement statementCount(Connection connection) throws RepositoryException {
+    protected PreparedStatement statementCount(Connection connection) throws RepositoryException {
         try {
             return connection.prepareStatement("select COUNT(*) from users");
         } catch (SQLException sqlException) {
@@ -26,7 +26,7 @@ public class UserDBRepository extends DBRepository<UUID, User> {
     }
 
     @Override
-    public PreparedStatement statementSelectAll(Connection connection) throws RepositoryException {
+    protected PreparedStatement statementSelectAll(Connection connection) throws RepositoryException {
         try {
             return connection.prepareStatement("select * from users");
         } catch (SQLException sqlException) {
@@ -35,7 +35,7 @@ public class UserDBRepository extends DBRepository<UUID, User> {
     }
 
     @Override
-    public PreparedStatement statementSelectOnID(Connection connection, UUID uuid) throws RepositoryException {
+    protected PreparedStatement statementSelectOnID(Connection connection, UUID uuid) throws RepositoryException {
         String sql = "select * from users where id = ?";
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
@@ -47,7 +47,7 @@ public class UserDBRepository extends DBRepository<UUID, User> {
     }
 
     @Override
-    public PreparedStatement statementSelectOnFields(Connection connection, User user) throws RepositoryException {
+    protected PreparedStatement statementSelectOnFields(Connection connection, User user) throws RepositoryException {
         String sql = "select * from users where first_name = ? AND last_name = ? AND email = ?";
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
@@ -61,7 +61,7 @@ public class UserDBRepository extends DBRepository<UUID, User> {
     }
 
     @Override
-    public PreparedStatement statementInsert(Connection connection, User user) throws RepositoryException {
+    protected PreparedStatement statementInsert(Connection connection, User user) throws RepositoryException {
         String sql = "insert into users(id, first_name, last_name, email) values(?, ?, ?,?)";
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
@@ -76,7 +76,7 @@ public class UserDBRepository extends DBRepository<UUID, User> {
     }
 
     @Override
-    public PreparedStatement statementDelete(Connection connection, UUID uuid) throws RepositoryException {
+    protected PreparedStatement statementDelete(Connection connection, UUID uuid) throws RepositoryException {
         String sql = "delete from users where id = ?";
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
@@ -88,7 +88,7 @@ public class UserDBRepository extends DBRepository<UUID, User> {
     }
 
     @Override
-    public PreparedStatement statementUpdate(Connection connection, User user) throws RepositoryException {
+    protected PreparedStatement statementUpdate(Connection connection, User user) throws RepositoryException {
         String sql = "update users set first_name = ?, last_name = ?, email = ? where id = ?";
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
@@ -102,7 +102,7 @@ public class UserDBRepository extends DBRepository<UUID, User> {
         }
     }
 
-    public PreparedStatement statementLastNameLike(Connection connection, String string) throws RepositoryException {
+    protected PreparedStatement statementLastNameLike(Connection connection, String string) throws RepositoryException {
         String sql = "select * from users where last_name like ?";
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
