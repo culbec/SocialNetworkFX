@@ -115,12 +115,12 @@ public class UserDBRepository extends DBRepository<UUID, User> {
 
     @Override
     protected User extractFromResultSet(ResultSet resultSet) throws SQLException {
-        String ID = resultSet.getString("ID");
+        UUID id = UUID.fromString(resultSet.getString("ID"));
         String first_name = resultSet.getString("first_name");
         String last_name = resultSet.getString("last_name");
         String email = resultSet.getString("email");
 
-        return new User(UUID.fromString(ID), first_name, last_name, email);
+        return new User(id, first_name, last_name, email);
     }
 
     /**

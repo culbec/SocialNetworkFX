@@ -1,7 +1,4 @@
-import ro.ubbcluj.map.socialnetworkfx.entity.FriendRequest;
-import ro.ubbcluj.map.socialnetworkfx.entity.Friendship;
-import ro.ubbcluj.map.socialnetworkfx.entity.Tuple;
-import ro.ubbcluj.map.socialnetworkfx.entity.User;
+import ro.ubbcluj.map.socialnetworkfx.entity.*;
 import ro.ubbcluj.map.socialnetworkfx.repository.InMemoryRepository;
 import ro.ubbcluj.map.socialnetworkfx.service.Service;
 
@@ -13,10 +10,7 @@ import java.util.UUID;
 
 public class TestCommunities {
     public static void run() {
-        InMemoryRepository<UUID, User> userInMemoryRepository = new InMemoryRepository<>();
-        InMemoryRepository<Tuple<UUID, UUID>, Friendship> friendshipInMemoryRepository = new InMemoryRepository<>();
-        InMemoryRepository<Tuple<Tuple<UUID, UUID>, LocalDateTime>, FriendRequest> friendRequestInMemoryRepository = new InMemoryRepository<>();
-        Service service = new Service(userInMemoryRepository, friendshipInMemoryRepository, friendRequestInMemoryRepository);
+        Service service = getService();
 
         service.addUser("Ion", "Remus", "ion.remus@mail.com");
         service.addUser("Marius", "Chiriac", "marius.chiriac@mail.com");
@@ -41,5 +35,15 @@ public class TestCommunities {
         assert (integerListTuple.getLeft() == 2 && integerListTuple.getRight().get(0).size() == 5);
 
         System.out.println("Communities tests passed at: " + DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss").format(LocalDateTime.now()));
+    }
+
+    private static Service getService() {
+        InMemoryRepository<UUID, User> userInMemoryRepository = new InMemoryRepository<>();
+        InMemoryRepository<Tuple<UUID, UUID>, Friendship> friendshipInMemoryRepository = new InMemoryRepository<>();
+        InMemoryRepository<Tuple<Tuple<UUID, UUID>, LocalDateTime>, FriendRequest> friendRequestInMemoryRepository = new InMemoryRepository<>();
+        InMemoryRepository<UUID, Message> messageInMemoryRepository = new InMemoryRepository<>();
+
+        Service service = new Service(userInMemoryRepository, friendshipInMemoryRepository, friendRequestInMemoryRepository, messageInMemoryRepository);
+        return service;
     }
 }

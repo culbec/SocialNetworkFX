@@ -111,9 +111,9 @@ public class FriendshipDBRepository extends DBRepository<Tuple<UUID, UUID>, Frie
 
     @Override
     protected Friendship extractFromResultSet(ResultSet resultSet) throws SQLException {
-        String idUser1 = resultSet.getString("id_user1");
-        String idUser2 = resultSet.getString("id_user2");
+        UUID idUser1 = UUID.fromString(resultSet.getString("id_user1"));
+        UUID idUser2 = UUID.fromString(resultSet.getString("id_user2"));
         Timestamp date = resultSet.getTimestamp("date");
-        return new Friendship(UUID.fromString(idUser1), UUID.fromString(idUser2), date.toLocalDateTime());
+        return new Friendship(idUser1, idUser2, date.toLocalDateTime());
     }
 }

@@ -1,43 +1,52 @@
 package ro.ubbcluj.map.socialnetworkfx.entity;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
 public class Message extends Entity<UUID> {
-    private User from;
-    private List<User> to;
-    private String message;
-    private LocalDateTime date;
+    // Sender of the message.
+    private final UUID from;
+    // Receivers of the message
+    private final List<UUID> to;
+    // Text of the message.
+    private final String messageText;
+    // Date of sending the message.
+    private final LocalDateTime date;
 
-    public Message(User from, List<User> to, String message, LocalDateTime date) {
+    public Message(UUID from, List<UUID> to, String messageText) {
         super(UUID.randomUUID());
         this.from = from;
         this.to = to;
-        this.message = message;
-        this.date = date;
+        this.messageText = messageText;
+        this.date = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS);
     }
 
-    public User getFrom() {
+    public Message(UUID id, UUID from, List<UUID> to, String messageText, LocalDateTime date) {
+        super(id);
+        this.from = from;
+        this.to = to;
+        this.messageText = messageText;
+        this.date = date.truncatedTo(ChronoUnit.MILLIS);
+    }
+
+    public UUID getFrom() {
         return from;
     }
 
-
-
-    public List<User> getTo() {
+    public List<UUID> getTo() {
         return to;
     }
 
-    public String getMessage() {
-        return message;
+    public String getMessageText() {
+        return messageText;
     }
 
     public LocalDateTime getDate() {
         return date;
     }
-
-
 
     @Override
     public boolean equals(Object o) {
@@ -45,12 +54,12 @@ public class Message extends Entity<UUID> {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Message message1 = (Message) o;
-        return Objects.equals(from, message1.from) && Objects.equals(to, message1.to) && Objects.equals(message, message1.message) && Objects.equals(date, message1.date);
+        return Objects.equals(from, message1.from) && Objects.equals(to, message1.to) && Objects.equals(messageText, message1.messageText) && Objects.equals(date, message1.date);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), from, to, message, date);
+        return Objects.hash(super.hashCode(), from, to, messageText, date);
     }
 
     @Override
@@ -58,7 +67,7 @@ public class Message extends Entity<UUID> {
         return "Message{" +
                 "from=" + from +
                 ", to=" + to +
-                ", message='" + message + '\'' +
+                ", message='" + messageText + '\'' +
                 ", date=" + date +
                 '}';
     }

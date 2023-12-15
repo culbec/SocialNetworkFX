@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="600.0" prefWidth="600.0"
+            xmlns="http://javafx.com/javafx/17.0.6"
+            fx:id="messageLayout"
+            fx:controller="ro.ubbcluj.map.socialnetworkfx.controllers.MessageController">
+    <top>
+        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="30.0" BorderPane.alignment="CENTER">
+            <Button mnemonicParsing="false" onAction="#viewMessagesLayout" text="View Messages">
+                <padding>
+                    <Insets bottom="10.0" left="20.0" right="20.0" top="10.0"/>
+                </padding>
+            </Button>
+            <Button mnemonicParsing="false" onAction="#sendMessageLayout" text="Send Message">
+                <padding>
+                    <Insets bottom="10.0" left="20.0" right="20.0" top="10.0"/>
+                </padding>
+            </Button>
+        </HBox>
+    </top>
+</BorderPane>

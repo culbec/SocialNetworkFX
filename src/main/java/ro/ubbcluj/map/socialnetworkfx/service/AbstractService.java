@@ -127,6 +127,7 @@ public interface AbstractService<ID> {
 
     /**
      * Sends a friend request from a user to another.
+     *
      * @param user1 User that sends the friend request.
      * @param user2 User that receives the friend request.
      */
@@ -134,13 +135,31 @@ public interface AbstractService<ID> {
 
     /**
      * Accepts a friend request between to users and make the two users friends.
+     *
      * @param friendRequest Friend request between two users.
      */
     void acceptFriendRequest(FriendRequest friendRequest);
 
     /**
      * Rejects a friend request between two users.
+     *
      * @param friendRequest Friend request between two users.
      */
     void rejectFriendRequest(FriendRequest friendRequest);
+
+    /**
+     * Returns a list of messages between given users sorted by the date of sending.
+     *
+     * @param sender   User that sent messages.
+     * @param receiver User that received messages.
+     * @return A list of messages between given users.
+     */
+    List<Message> getMessagesBetweenUsers(User sender, User receiver);
+
+    /**
+     * Sends a message from a user to others users.
+     *
+     * @param message Message to be sent.
+     */
+    void sendMessage(Message message);
 }

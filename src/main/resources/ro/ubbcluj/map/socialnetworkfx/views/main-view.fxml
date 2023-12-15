@@ -2,87 +2,77 @@
 
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-
-<BorderPane fx:id="mainLayout" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="600.0" minWidth="600.0" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ro.ubbcluj.map.socialnetworkfx.controllers.AdminController">
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:id="mainLayout" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+            minHeight="600.0" minWidth="600.0" prefHeight="1000.0" prefWidth="1200.0"
+            xmlns="http://javafx.com/javafx/11.0.14-internal"
+            fx:controller="ro.ubbcluj.map.socialnetworkfx.controllers.AdminController">
     <top>
         <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
-            <children>
-                <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
-                    <children>
-                        <Label text="TWSN (The Worst Social Network)" textAlignment="CENTER" textFill="#38667c">
-                            <font>
-                                <Font name="Fira Sans Condensed Light" size="30.0" />
-                            </font>
-                        </Label>
-                    </children>
-                </HBox>
-                <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="30.0">
-                    <children>
-                        <Button mnemonicParsing="false" onAction="#userLayoutChange" text="Users" textAlignment="CENTER">
-                            <font>
-                                <Font name="Ubuntu" size="16.0" />
-                            </font>
-                            <padding>
-                                <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
-                            </padding>
-                        </Button>
-                        <Button mnemonicParsing="false" onAction="#friendshipLayoutChange" text="Friendships">
-                            <font>
-                                <Font name="Ubuntu" size="16.0" />
-                            </font>
-                            <padding>
-                                <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
-                            </padding>
-                        </Button>
-                        <Button mnemonicParsing="false" onAction="#messageLayoutChange" text="Messages">
-                            <font>
-                                <Font name="Ubuntu" size="16.0" />
-                            </font>
-                            <padding>
-                                <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
-                            </padding>
-                        </Button>
-                        <Button mnemonicParsing="false" onAction="#otherLayoutChange" text="Other">
-                            <font>
-                                <Font name="Ubuntu" size="16.0" />
-                            </font>
-                            <padding>
-                                <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
-                            </padding>
-                        </Button>
-                    </children>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+                <Label text="TWSN (The Worst Social Network)" textAlignment="CENTER" textFill="#38667c">
+                    <font>
+                        <Font name="Fira Sans Condensed Light" size="30.0"/>
+                    </font>
+                </Label>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="30.0">
+                <padding>
+                    <Insets bottom="5.0" left="20.0" right="20.0" top="10.0"/>
+                </padding>
+                <Button mnemonicParsing="false" onAction="#userLayoutChange" text="Users"
+                        textAlignment="CENTER">
+                    <font>
+                        <Font name="Ubuntu" size="16.0"/>
+                    </font>
                     <padding>
-                        <Insets bottom="5.0" left="20.0" right="20.0" top="10.0" />
+                        <Insets bottom="10.0" left="20.0" right="20.0" top="10.0"/>
                     </padding>
-                </HBox>
-            </children>
+                </Button>
+                <Button mnemonicParsing="false" onAction="#friendshipLayoutChange" text="Friendships">
+                    <font>
+                        <Font name="Ubuntu" size="16.0"/>
+                    </font>
+                    <padding>
+                        <Insets bottom="10.0" left="20.0" right="20.0" top="10.0"/>
+                    </padding>
+                </Button>
+                <Button mnemonicParsing="false" onAction="#messageLayoutChange" text="Messages">
+                    <font>
+                        <Font name="Ubuntu" size="16.0"/>
+                    </font>
+                    <padding>
+                        <Insets bottom="10.0" left="20.0" right="20.0" top="10.0"/>
+                    </padding>
+                </Button>
+                <Button mnemonicParsing="false" onAction="#otherLayoutChange" text="Other">
+                    <font>
+                        <Font name="Ubuntu" size="16.0"/>
+                    </font>
+                    <padding>
+                        <Insets bottom="10.0" left="20.0" right="20.0" top="10.0"/>
+                    </padding>
+                </Button>
+            </HBox>
         </VBox>
     </top>
-   <center>
-      <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
-         <children>
+    <center>
+        <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
-               <children>
-                  <Label text="Welcome!">
-                     <font>
-                        <Font name="Ubuntu Bold Italic" size="36.0" />
-                     </font>
-                  </Label>
-               </children>
+                <Label text="Welcome!">
+                    <font>
+                        <Font name="Ubuntu Bold Italic" size="36.0"/>
+                    </font>
+                </Label>
             </HBox>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
-               <children>
-                  <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../images/mascot.jpg" />
-                     </image>
-                  </ImageView>
-               </children>
+                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                    <Image url="@../images/mascot.jpg"/>
+                </ImageView>
             </HBox>
-         </children>
-      </VBox>
-   </center>
+        </VBox>
+    </center>
 </BorderPane>

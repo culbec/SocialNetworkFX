@@ -3,7 +3,6 @@ package ro.ubbcluj.map.socialnetworkfx.controllers;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.*;
 import javafx.scene.layout.BorderPane;
@@ -13,14 +12,17 @@ import ro.ubbcluj.map.socialnetworkfx.entity.User;
 import ro.ubbcluj.map.socialnetworkfx.exception.ServiceException;
 import ro.ubbcluj.map.socialnetworkfx.repository.FriendRequestDBRepository;
 import ro.ubbcluj.map.socialnetworkfx.repository.FriendshipDBRepository;
+import ro.ubbcluj.map.socialnetworkfx.repository.MessageDBRepository;
 import ro.ubbcluj.map.socialnetworkfx.repository.UserDBRepository;
 import ro.ubbcluj.map.socialnetworkfx.service.Service;
 import ro.ubbcluj.map.socialnetworkfx.utility.PopupEnum;
 import ro.ubbcluj.map.socialnetworkfx.utility.RandomUserGenerator;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Controller for the admin interface of the social network.
@@ -28,21 +30,61 @@ import java.util.*;
 public class AdminController {
     // Popup headers and texts.
     private static final Map<PopupEnum, Tuple<String, String>> POPUPS = new HashMap<>();
+    // Service dependency.
+    private final Service service;
+    // FXMLLoader Map that stores different loaders for different layouts.
+    @FXML
+    private final Map<String, Parent> layouts = new TreeMap<>();
     // FXML elements.
     @FXML
     private BorderPane mainLayout;
-    @FXML
-    private TableView<User> friendsTableView;
-    @FXML
-    private TableColumn<User, String> userFriend;
-    @FXML
-    private TableColumn<LocalDateTime, LocalDateTime> friendshipDate;
-    // Service dependency.
-    private Service service;
 
-    // FXMLLoader Map that stores different loaders for different layouts.
-    @FXML
-    private final Map<String, FXMLLoader> fxmlLoaders = new TreeMap<>();
+    public AdminController() throws IOException {
+        // Specifying the database.
+        String DB_URL = "jdbc:postgresql://localhost:5432/socialnetwork";
+        String USERNAME = "postgres";
+        String PASSWORD = "postgres";
+
+        // Initializing the database repositories.
+        UserDBRepository userDBRepository = new UserDBRepository(DB_URL, USERNAME, PASSWORD);
+        FriendshipDBRepository friendshipDBRepository = new FriendshipDBRepository(DB_URL, USERNAME, PASSWORD);
+        FriendRequestDBRepository friendRequestDBRepository = new FriendRequestDBRepository(DB_URL, USERNAME, PASSWORD);
+        MessageDBRepository messageDBRepository = new MessageDBRepository(DB_URL, USERNAME, PASSWORD);
+
+        // Initializing the service.
+        this.service = new Service(userDBRepository, friendshipDBRepository, friendRequestDBRepository, messageDBRepository);
+
+        // Trying to add 20 new users if there are less than 10 users.
+        if (this.service.getUsers().size() < 10) {
+            ArrayList<User> users = RandomUserGenerator.generate20Users();
+
+            users.forEach(user -> {
+                try {
+                    this.service.addUser(user.getFirstName(), user.getLastName(), user.getEmail());
+                } catch (ServiceException sE) {
+                    System.err.println(sE.getMessage());
+                }
+            });
+
+            // Adding 20 hardcoded friendships
+            this.service.addFriendship(this.service.getUsers().get(0).getId(), this.service.getUsers().get(1).getId());
+            this.service.addFriendship(this.service.getUsers().get(0).getId(), this.service.getUsers().get(2).getId());
+            this.service.addFriendship(this.service.getUsers().get(0).getId(), this.service.getUsers().get(3).getId());
+            this.service.addFriendship(this.service.getUsers().get(0).getId(), this.service.getUsers().get(4).getId());
+            this.service.addFriendship(this.service.getUsers().get(0).getId(), this.service.getUsers().get(5).getId());
+            this.service.addFriendship(this.service.getUsers().get(1).getId(), this.service.getUsers().get(5).getId());
+            this.service.addFriendship(this.service.getUsers().get(1).getId(), this.service.getUsers().get(6).getId());
+            this.service.addFriendship(this.service.getUsers().get(1).getId(), this.service.getUsers().get(7).getId());
+            this.service.addFriendship(this.service.getUsers().get(3).getId(), this.service.getUsers().get(2).getId());
+            this.service.addFriendship(this.service.getUsers().get(4).getId(), this.service.getUsers().get(3).getId());
+        }
+
+        // Adding different loaders to the main app.
+        this.addLayouts();
+
+        // Adding popup headers and texts.
+        addPopups();
+    }
 
     /**
      * Adds headers and texts for the popup alerts.
@@ -129,104 +171,61 @@ public class AdminController {
      * Adds different panes to the controller that will be used to
      * represent different actions based on the action wanted.
      */
-    private void addLoaders() throws IOException {
-        this.fxmlLoaders.put("users", new FXMLLoader(SocialNetworkApplication.class.getResource("views/user-view.fxml")));
-        this.fxmlLoaders.put("friendships", new FXMLLoader(SocialNetworkApplication.class.getResource("views/friendship-view.fxml")));
+    private void addLayouts() throws IOException {
+        // Adding the user layout.
+        FXMLLoader userLoader = new FXMLLoader(SocialNetworkApplication.class.getResource("views/user-view.fxml"));
+        Parent userRoot = userLoader.load();
+        UserController userController = userLoader.getController();
+        userController.initController(this.service);
 
-        // Loading the root for each loader and setting its service.
-        FXMLLoader userLoader = this.fxmlLoaders.get("users");
-        userLoader.load();
-        ((UserController) userLoader.getController()).setService(this.service);
+        // Adding the friendship layout
+        FXMLLoader friendshipLoader = new FXMLLoader(SocialNetworkApplication.class.getResource("views/friendship-view.fxml"));
+        Parent friendshipRoot = friendshipLoader.load();
+        FriendshipController friendshipController = friendshipLoader.getController();
+        friendshipController.initController(this.service);
 
-        FXMLLoader friendshipLoader = this.fxmlLoaders.get("friendships");
-        friendshipLoader.load();
-        ((FriendshipController) friendshipLoader.getController()).initController(this.service);
-    }
+        // Adding the message layout.
+        FXMLLoader messageLoader = new FXMLLoader(SocialNetworkApplication.class.getResource("views/message-view.fxml"));
+        Parent messageRoot = messageLoader.load();
+        MessageController messageController = messageLoader.getController();
+        messageController.initController(this.service);
 
-    /**
-     * Adds the observers to the service.
-     */
-    private void addObservers() {
-        UserController userController = this.fxmlLoaders.get("users").getController();
-        FriendshipController friendshipController = this.fxmlLoaders.get("friendships").getController();
-
-        this.service.addObserver(userController);
-        this.service.addObserver(friendshipController);
-    }
-
-    public AdminController() throws IOException {
-        // Specifying the database.
-        String DB_URL = "jdbc:postgresql://localhost:5432/socialnetwork";
-        String USERNAME = "postgres";
-        String PASSWORD = "postgres";
-
-        // Initializing the database repositories.
-        UserDBRepository userDBRepository = new UserDBRepository(DB_URL, USERNAME, PASSWORD);
-        FriendshipDBRepository friendshipDBRepository = new FriendshipDBRepository(DB_URL, USERNAME, PASSWORD);
-        FriendRequestDBRepository friendRequestDBRepository = new FriendRequestDBRepository(DB_URL, USERNAME, PASSWORD);
-
-        // Initializing the service.
-        this.service = new Service(userDBRepository, friendshipDBRepository, friendRequestDBRepository);
-
-        // Trying to add 20 new users if there are less than 10 users.
-        if (this.service.getUsers().size() < 10) {
-            ArrayList<User> users = RandomUserGenerator.generate20Users();
-
-            users.forEach(user -> {
-                try {
-                    this.service.addUser(user.getFirstName(), user.getLastName(), user.getEmail());
-                } catch (ServiceException sE) {
-                    System.err.println(sE.getMessage());
-                }
-            });
-
-            // Adding 20 hardcoded friendships
-            this.service.addFriendship(this.service.getUsers().get(0).getId(), this.service.getUsers().get(1).getId());
-            this.service.addFriendship(this.service.getUsers().get(0).getId(), this.service.getUsers().get(2).getId());
-            this.service.addFriendship(this.service.getUsers().get(0).getId(), this.service.getUsers().get(3).getId());
-            this.service.addFriendship(this.service.getUsers().get(0).getId(), this.service.getUsers().get(4).getId());
-            this.service.addFriendship(this.service.getUsers().get(0).getId(), this.service.getUsers().get(5).getId());
-            this.service.addFriendship(this.service.getUsers().get(1).getId(), this.service.getUsers().get(5).getId());
-            this.service.addFriendship(this.service.getUsers().get(1).getId(), this.service.getUsers().get(6).getId());
-            this.service.addFriendship(this.service.getUsers().get(1).getId(), this.service.getUsers().get(7).getId());
-            this.service.addFriendship(this.service.getUsers().get(3).getId(), this.service.getUsers().get(2).getId());
-            this.service.addFriendship(this.service.getUsers().get(4).getId(), this.service.getUsers().get(3).getId());
-        }
-
-        // Adding different loaders to the main app.
-        this.addLoaders();
+        // Adding the layouts in the map.
+        this.layouts.put("users", userRoot);
+        this.layouts.put("friendships", friendshipRoot);
+        this.layouts.put("messages", messageRoot);
 
         // Adding the observers.
-        this.addObservers();
-
-        // Adding popup headers and texts.
-        addPopups();
+        this.service.addObserver(userController);
+        this.service.addObserver(friendshipController);
     }
 
     /**
      * Changes the layout to the user layout.
      */
     public void userLayoutChange() {
-        // Retrieving the root of the loader.
-        Parent userRoot = this.fxmlLoaders.get("users").getRoot();
+        // Loading the root.
+        Parent userRoot = this.layouts.get("users");
 
         // Setting the new root of the center section.
         this.mainLayout.setCenter(userRoot);
     }
 
     public void friendshipLayoutChange() {
-        // Retrieving the root of the loader.
-        Parent friendshipRoot = this.fxmlLoaders.get("friendships").getRoot();
-
-        // Repopulating the friend list on layout change.
-        FriendshipController friendshipController = this.fxmlLoaders.get("friendships").getController();
-        friendshipController.userComboAction();
+        // Loading the root.
+        Parent friendshipRoot = this.layouts.get("friendships");
 
         // Setting the new root of the center section.
         this.mainLayout.setCenter(friendshipRoot);
     }
 
     public void messageLayoutChange() {
+        // Loading the root.
+        Parent messageRoot = this.layouts.get("messages");
+
+        // Setting it as the main layout.
+        this.mainLayout.setCenter(messageRoot);
+
     }
 
     public void otherLayoutChange() {

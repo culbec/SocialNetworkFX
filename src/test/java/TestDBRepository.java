@@ -1,9 +1,7 @@
-import ro.ubbcluj.map.socialnetworkfx.entity.FriendRequest;
-import ro.ubbcluj.map.socialnetworkfx.entity.Friendship;
-import ro.ubbcluj.map.socialnetworkfx.entity.Tuple;
-import ro.ubbcluj.map.socialnetworkfx.entity.User;
+import ro.ubbcluj.map.socialnetworkfx.entity.*;
 import ro.ubbcluj.map.socialnetworkfx.repository.FriendRequestDBRepository;
 import ro.ubbcluj.map.socialnetworkfx.repository.FriendshipDBRepository;
+import ro.ubbcluj.map.socialnetworkfx.repository.MessageDBRepository;
 import ro.ubbcluj.map.socialnetworkfx.repository.UserDBRepository;
 
 import java.sql.Connection;
@@ -11,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Optional;
 
 public class TestDBRepository {
@@ -42,6 +41,25 @@ public class TestDBRepository {
         try (Connection connection = friendRequestDBRepository.connect()) {
             try (PreparedStatement statement = connection.prepareStatement("delete from friendrequests")) {
                 statement.execute();
+            } catch (SQLException sqlException) {
+                System.err.println(sqlException.getMessage());
+            }
+        } catch (SQLException sqlException) {
+            System.err.println(sqlException.getMessage());
+        }
+    }
+
+    private static void clearDBMessages(MessageDBRepository messageDBRepository) {
+        try (Connection connection = messageDBRepository.connect()) {
+            // Deleting the rows which contain the FKs.
+            try (PreparedStatement statementDeleteMessagesUsers = connection.prepareStatement("delete from \"messagesUsers\"")) {
+                statementDeleteMessagesUsers.execute();
+            } catch (SQLException sqlException) {
+                System.err.println(sqlException.getMessage());
+            }
+            // Deleting the messages.
+            try (PreparedStatement statementDeleteMessages = connection.prepareStatement("delete from messages")) {
+                statementDeleteMessages.execute();
             } catch (SQLException sqlException) {
                 System.err.println(sqlException.getMessage());
             }
@@ -111,7 +129,7 @@ public class TestDBRepository {
         System.out.println("FriendshipDBRepository passed at: " + DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss").format(LocalDateTime.now()));
     }
 
-    public static void runFriendrequestDBRepository() {
+    public static void runFriendRequestDBRepository() {
         FriendRequestDBRepository friendRequestDBRepository = new FriendRequestDBRepository("jdbc:postgresql://localhost:5432/socialNetworkTests", "postgres", "postgres");
         UserDBRepository userDBRepository = new UserDBRepository("jdbc:postgresql://localhost:5432/socialNetworkTests", "postgres", "postgres");
         clearDBFriendrequest(friendRequestDBRepository);
@@ -125,7 +143,7 @@ public class TestDBRepository {
 
         assert friendRequestDBRepository.isEmpty();
 
-        FriendRequest friendRequest = new FriendRequest(user1.getId(), user2.getId(), "pending");
+        FriendRequest friendRequest = new FriendRequest(user1.getId(), user2.getId());
         friendRequestDBRepository.save(friendRequest);
 
         assert friendRequestDBRepository.size() == 1;
@@ -142,5 +160,49 @@ public class TestDBRepository {
         assert friendRequestDBRepository.isEmpty();
 
         System.out.println("FriendshipRequestDBRepository passed at: " + DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss").format(LocalDateTime.now()));
+    }
+
+    public static void runMessageDBRepository() {
+        UserDBRepository userDBRepository = new UserDBRepository("jdbc:postgresql://localhost:5432/socialNetworkTests", "postgres", "postgres");
+        MessageDBRepository messageDBRepository = new MessageDBRepository("jdbc:postgresql://localhost:5432/socialNetworkTests", "postgres", "postgres");
+        clearDBUser(userDBRepository);
+        clearDBMessages(messageDBRepository);
+
+        // Creating some users.
+        User user1 = new User("Ion", "Micu", "ion.micu@mail.com");
+        User user2 = new User("Andrei", "Micu", "andrei.micu@mail.com");
+        User user3 = new User("Maria", "Micu", "maria.micu@mail.com");
+
+        // Adding the users.
+        userDBRepository.save(user1);
+        userDBRepository.save(user2);
+        userDBRepository.save(user3);
+
+        // Creating the message.
+        Message message = new Message(user1.getId(), Arrays.asList(user2.getId(), user3.getId()), "hello receivers!");
+
+        // Saving the message into the db.
+        assert messageDBRepository.isEmpty();
+        assert messageDBRepository.save(message).isEmpty();
+
+        // Verifying if the message was actually added.
+        assert !messageDBRepository.isEmpty();
+        Optional<Message> optionalMessage = messageDBRepository.getOne(message.getId());
+        assert optionalMessage.isPresent() && optionalMessage.get().equals(message);
+
+        // Updating the message.
+        Message updateMessage = new Message(message.getId(), message.getFrom(), message.getTo(), "hello receivers (update)!", LocalDateTime.now());
+        Optional<Message> old = messageDBRepository.update(updateMessage);
+
+        assert old.isPresent() && old.get().equals(message);
+
+        // Finding the messages of a user.
+        assert messageDBRepository.getMessagesBetweenUsers(user1.getId(), user2.getId()).size() == 1;
+
+        // Deleting the message.
+        Optional<Message> deleted = messageDBRepository.delete(message.getId());
+        assert deleted.isPresent() && deleted.get().equals(updateMessage) && messageDBRepository.isEmpty();
+
+        System.out.println("MessageDBRepository passed at: " + DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss").format(LocalDateTime.now()));
     }
 }

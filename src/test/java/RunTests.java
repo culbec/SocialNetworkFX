@@ -1,6 +1,5 @@
 import ro.ubbcluj.map.socialnetworkfx.exception.RepositoryException;
 
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -14,7 +13,8 @@ public class RunTests {
 
         TestDBRepository.runUserDBRepository();
         TestDBRepository.runFriendshipDBRepository();
-        TestDBRepository.runFriendrequestDBRepository();
+        TestDBRepository.runFriendRequestDBRepository();
+        TestDBRepository.runMessageDBRepository();
 
         System.out.println("All tests passed at: " + DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss").format(LocalDateTime.now()));
     }

@@ -21,7 +21,10 @@ import ro.ubbcluj.map.socialnetworkfx.utility.PopupEnum;
 import ro.ubbcluj.map.socialnetworkfx.utility.observer.Observer;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class UserController implements Observer<SocialNetworkEvent> {
     @FXML
@@ -39,10 +42,15 @@ public class UserController implements Observer<SocialNetworkEvent> {
 
     /**
      * Setting the service and initializes the model for the table view.
+     *
      * @param service Service to be set.
      */
     public void setService(Service service) {
         this.service = service;
+    }
+
+    public void initController(Service service) {
+        this.setService(service);
         this.initializeUserModel();
     }
 
@@ -285,7 +293,7 @@ public class UserController implements Observer<SocialNetworkEvent> {
 
     @Override
     public void update(SocialNetworkEvent event) {
-        if(this.userTableView.isVisible()) {
+        if (this.userTableView.isVisible()) {
             if (event.getClass().equals(UserEvent.class)) {
                 // Casting to the specific type of event.
                 UserEvent userEvent = (UserEvent) event;

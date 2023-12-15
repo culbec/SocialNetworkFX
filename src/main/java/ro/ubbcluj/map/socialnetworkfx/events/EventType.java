@@ -7,7 +7,7 @@ public enum EventType {
     ADD_USER,
     UPDATE_USER,
     REMOVE_USER,
-
     ADD_FRIENDSHIP,
-    REMOVE_FRIENDSHIP
+    REMOVE_FRIENDSHIP,
+    ADD_MESSAGE
 }

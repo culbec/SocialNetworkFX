@@ -6,7 +6,6 @@ import ro.ubbcluj.map.socialnetworkfx.exception.RepositoryException;
 
 import java.sql.*;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 public class FriendRequestDBRepository extends DBRepository<Tuple<Tuple<UUID, UUID>, LocalDateTime>, FriendRequest> {
@@ -128,13 +127,13 @@ public class FriendRequestDBRepository extends DBRepository<Tuple<Tuple<UUID, UU
 
     @Override
     protected FriendRequest extractFromResultSet(ResultSet resultSet) throws SQLException {
-        String idUser1 = resultSet.getString("id_user1");
-        String idUser2 = resultSet.getString("id_user2");
+        UUID idUser1 = UUID.fromString(resultSet.getString("id_user1"));
+        UUID idUser2 = UUID.fromString(resultSet.getString("id_user2"));
         String status = resultSet.getString("status");
         Timestamp timestamp = resultSet.getTimestamp("date");
 
 
-        return new FriendRequest(UUID.fromString(idUser1), UUID.fromString(idUser2), status, timestamp.toLocalDateTime());
+        return new FriendRequest(idUser1, idUser2, status, timestamp.toLocalDateTime());
     }
 
     /**

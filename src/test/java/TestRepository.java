@@ -1,7 +1,7 @@
 import ro.ubbcluj.map.socialnetworkfx.entity.User;
 import ro.ubbcluj.map.socialnetworkfx.exception.RepositoryException;
-import ro.ubbcluj.map.socialnetworkfx.repository.Repository;
 import ro.ubbcluj.map.socialnetworkfx.repository.InMemoryRepository;
+import ro.ubbcluj.map.socialnetworkfx.repository.Repository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

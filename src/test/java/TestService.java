@@ -1,7 +1,4 @@
-import ro.ubbcluj.map.socialnetworkfx.entity.FriendRequest;
-import ro.ubbcluj.map.socialnetworkfx.entity.Friendship;
-import ro.ubbcluj.map.socialnetworkfx.entity.Tuple;
-import ro.ubbcluj.map.socialnetworkfx.entity.User;
+import ro.ubbcluj.map.socialnetworkfx.entity.*;
 import ro.ubbcluj.map.socialnetworkfx.exception.ServiceException;
 import ro.ubbcluj.map.socialnetworkfx.repository.InMemoryRepository;
 import ro.ubbcluj.map.socialnetworkfx.service.Service;
@@ -12,11 +9,7 @@ import java.util.UUID;
 
 public class TestService {
     public static void run() {
-        InMemoryRepository<UUID, User> userInMemoryRepository = new InMemoryRepository<>();
-        InMemoryRepository<Tuple<UUID, UUID>, Friendship> friendshipInMemoryRepository = new InMemoryRepository<>();
-        InMemoryRepository<Tuple<Tuple<UUID, UUID>, LocalDateTime>, FriendRequest> friendRequestInMemoryRepository = new InMemoryRepository<>();
-
-        Service service = new Service(userInMemoryRepository, friendshipInMemoryRepository, friendRequestInMemoryRepository);
+        Service service = getService();
 
         // new service shouldn't have values in it
         assert (service.getUsers().isEmpty());
@@ -117,5 +110,14 @@ public class TestService {
         assert old.getFirstName().equals(oldFirstname);
 
         System.out.println("Service tests passed at: " + DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss").format(LocalDateTime.now()));
+    }
+
+    private static Service getService() {
+        InMemoryRepository<UUID, User> userInMemoryRepository = new InMemoryRepository<>();
+        InMemoryRepository<Tuple<UUID, UUID>, Friendship> friendshipInMemoryRepository = new InMemoryRepository<>();
+        InMemoryRepository<Tuple<Tuple<UUID, UUID>, LocalDateTime>, FriendRequest> friendRequestInMemoryRepository = new InMemoryRepository<>();
+        InMemoryRepository<UUID, Message> messageInMemoryRepository = new InMemoryRepository<>();
+
+        return new Service(userInMemoryRepository, friendshipInMemoryRepository, friendRequestInMemoryRepository, messageInMemoryRepository);
     }
 }

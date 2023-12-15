@@ -1,8 +1,9 @@
-import ro.ubbcluj.map.socialnetworkfx.entity.Friendship;
-import ro.ubbcluj.map.socialnetworkfx.entity.User;
+import ro.ubbcluj.map.socialnetworkfx.entity.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.UUID;
 
 public class TestEntity {
@@ -44,6 +45,29 @@ public class TestEntity {
         newFriendship.setId(friendship.getId());
         assert (friendship.equals(newFriendship));
         assert (!(friendship.hashCode() == newFriendship.hashCode()));
+
+        // Testing Friend Request.
+        FriendRequest friendRequest = new FriendRequest(user1.getId(), user2.getId());
+        assert friendRequest.getIdFrom().equals(user1.getId());
+        assert friendRequest.getIdTo().equals(user2.getId());
+        assert friendRequest.getStatus().equals("pending");
+        assert friendRequest.getDate().getHour() == LocalDateTime.now().getHour();
+        assert friendRequest.getId().equals(new Tuple<>(new Tuple<>(user1.getId(), user2.getId()), friendRequest.getDate()));
+
+        // Testing Message.
+        Message message = new Message(user1.getId(), Arrays.asList(user2.getId(), user3.getId()), "hello receivers!");
+        assert message.getFrom().equals(user1.getId());
+        assert message.getTo().size() == 2;
+        assert message.getMessageText().equals("hello receivers!");
+        assert message.getDate().getHour() == LocalDateTime.now().getHour();
+
+        // Testing Reply message.
+        ReplyMessage replyMessage = new ReplyMessage(user2.getId(), Collections.singletonList(user1.getId()), "hello sender!", message.getId());
+        assert replyMessage.getFrom().equals(user2.getId());
+        assert replyMessage.getTo().get(0).equals(user1.getId());
+        assert replyMessage.getMessageText().equals("hello sender!");
+        assert replyMessage.getMessage().equals(message.getId());
+        assert replyMessage.getDate().getHour() == LocalDateTime.now().getHour();
 
         System.out.println("Entity tests passed at: " + DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss").format(LocalDateTime.now()));
     }

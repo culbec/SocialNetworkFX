@@ -1,17 +1,12 @@
 package ro.ubbcluj.map.socialnetworkfx.service;
 
-import ro.ubbcluj.map.socialnetworkfx.entity.FriendRequest;
-import ro.ubbcluj.map.socialnetworkfx.entity.Friendship;
-import ro.ubbcluj.map.socialnetworkfx.entity.Tuple;
-import ro.ubbcluj.map.socialnetworkfx.entity.User;
-import ro.ubbcluj.map.socialnetworkfx.events.EventType;
-import ro.ubbcluj.map.socialnetworkfx.events.FriendshipEvent;
-import ro.ubbcluj.map.socialnetworkfx.events.SocialNetworkEvent;
-import ro.ubbcluj.map.socialnetworkfx.events.UserEvent;
+import ro.ubbcluj.map.socialnetworkfx.entity.*;
+import ro.ubbcluj.map.socialnetworkfx.events.*;
 import ro.ubbcluj.map.socialnetworkfx.exception.RepositoryException;
 import ro.ubbcluj.map.socialnetworkfx.exception.ServiceException;
 import ro.ubbcluj.map.socialnetworkfx.exception.ValidatorException;
 import ro.ubbcluj.map.socialnetworkfx.repository.FriendRequestDBRepository;
+import ro.ubbcluj.map.socialnetworkfx.repository.MessageDBRepository;
 import ro.ubbcluj.map.socialnetworkfx.repository.Repository;
 import ro.ubbcluj.map.socialnetworkfx.repository.UserDBRepository;
 import ro.ubbcluj.map.socialnetworkfx.utility.Graph;
@@ -30,18 +25,22 @@ public class Service implements AbstractService<UUID>, Observable<SocialNetworkE
     private final Repository<UUID, User> userRepository;
     // Repository that stores Friendships.
     private final Repository<Tuple<UUID, UUID>, Friendship> friendshipRepository;
-    // Repository that stores Friend Requests.
+    // Repository that stores FriendRequests.
     private final Repository<Tuple<Tuple<UUID, UUID>, LocalDateTime>, FriendRequest> friendRequestRepository;
+    // Repository that stores messages.
+    private final Repository<UUID, Message> messageRepository;
 
     // Set of observers to the Service.
     private final Set<Observer<SocialNetworkEvent>> observers = new HashSet<>();
 
     public Service(Repository<UUID, User> userRepo,
                    Repository<Tuple<UUID, UUID>, Friendship> friendshipRepo,
-                   Repository<Tuple<Tuple<UUID, UUID>, LocalDateTime>, FriendRequest> friendRequestRepository) {
+                   Repository<Tuple<Tuple<UUID, UUID>, LocalDateTime>, FriendRequest> friendRequestRepository,
+                   Repository<UUID, Message> messageRepository) {
         this.userRepository = userRepo;
         this.friendshipRepository = friendshipRepo;
         this.friendRequestRepository = friendRequestRepository;
+        this.messageRepository = messageRepository;
     }
 
     @Override
@@ -374,7 +373,7 @@ public class Service implements AbstractService<UUID>, Observable<SocialNetworkE
         }
 
         // If not, we can proceed on sending the friend request.
-        this.friendRequestRepository.save(new FriendRequest(user1.getId(), user2.getId(), "pending"));
+        this.friendRequestRepository.save(new FriendRequest(user1.getId(), user2.getId()));
     }
 
     @Override
@@ -397,6 +396,25 @@ public class Service implements AbstractService<UUID>, Observable<SocialNetworkE
             // Updating the status of the friend request.
             FriendRequest newFriendRequest = new FriendRequest(friendRequest.getIdFrom(), friendRequest.getIdTo(), "rejected", friendRequest.getDate());
             this.friendRequestRepository.update(newFriendRequest);
+        }
+    }
+
+    @Override
+    public List<Message> getMessagesBetweenUsers(User sender, User receiver) {
+        List<Message> messages = ((MessageDBRepository) this.messageRepository).getMessagesBetweenUsers(sender.getId(), receiver.getId());
+        messages.sort(Comparator.comparing(Message::getDate));
+        return messages;
+    }
+
+    @Override
+    public void sendMessage(Message message) {
+        // Attempting to save the message.
+        try {
+            this.messageRepository.save(message);
+            // Notifying the observers.
+            this.notify(new MessageEvent(EventType.ADD_MESSAGE, message));
+        } catch (RepositoryException repositoryException) {
+            throw new ServiceException(repositoryException.getMessage(), repositoryException.getCause());
         }
     }
 

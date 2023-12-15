@@ -40,6 +40,7 @@ public class FriendshipController implements Observer<SocialNetworkEvent> {
 
     /**
      * Initializes the controller.
+     *
      * @param service Service dependency.
      */
     public void initController(Service service) {
@@ -84,6 +85,7 @@ public class FriendshipController implements Observer<SocialNetworkEvent> {
 
     /**
      * Verifies if the friend list is empty.
+     *
      * @return Boolean value encapsulating the emptiness of the friend list.
      */
     private boolean checkFriendListViewEmpty() {
@@ -99,6 +101,7 @@ public class FriendshipController implements Observer<SocialNetworkEvent> {
 
     /**
      * Verifies if a selection was made in the friend list.
+     *
      * @return Boolean value encapsulating if a selection was made in the friend list.
      */
     private boolean checkFriendSelectionEmpty() {
@@ -114,6 +117,7 @@ public class FriendshipController implements Observer<SocialNetworkEvent> {
 
     /**
      * Sends a friend request from a user to another.
+     *
      * @throws IOException If the FXMLLoader couldn't be loaded.
      */
     public void friendshipAdd() throws IOException {
@@ -204,7 +208,6 @@ public class FriendshipController implements Observer<SocialNetworkEvent> {
     }
 
     /**
-     *
      * @return The current selected value in the friend request view.
      */
     private User extractSelected() {
@@ -324,6 +327,7 @@ public class FriendshipController implements Observer<SocialNetworkEvent> {
 
     /**
      * Adds a new friend to the friend list.
+     *
      * @param newFriendship Friendship that encapsulates the two friends.
      */
     private void addFriendList(Tuple<UUID, UUID> newFriendship) {
@@ -339,6 +343,7 @@ public class FriendshipController implements Observer<SocialNetworkEvent> {
 
     /**
      * Removes a friend from the friend list.
+     *
      * @param oldFriendship Friendship that encapsulates the two old friends.
      */
     private void removeFriendList(Tuple<UUID, UUID> oldFriendship) {
@@ -354,6 +359,7 @@ public class FriendshipController implements Observer<SocialNetworkEvent> {
 
     /**
      * Adds a new value to the combo box.
+     *
      * @param newUser Value to be added.
      */
     private void addUserComboBox(User newUser) {
@@ -362,6 +368,7 @@ public class FriendshipController implements Observer<SocialNetworkEvent> {
 
     /**
      * Removes a value from the combo box.
+     *
      * @param oldUser Value to be removed.
      */
     private void removeUserComboBox(User oldUser) {
@@ -380,6 +387,7 @@ public class FriendshipController implements Observer<SocialNetworkEvent> {
 
     /**
      * Updates a value in the combo box.
+     *
      * @param oldUser Old value.
      * @param newUser New value.
      */

@@ -2,26 +2,23 @@ package ro.ubbcluj.map.socialnetworkfx.entity;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Objects;
 import java.util.UUID;
 
 public class FriendRequest extends Entity<Tuple<Tuple<UUID, UUID>, LocalDateTime>> {
-    // The one who requests.
-    private UUID idFrom;
-    // The one requested.
-    private UUID idTo;
-
-    // One of: pending, accepted, rejected.
-    private String status;
-
     // Date when the friend request was sent.
-    LocalDateTime date;
+    private final LocalDateTime date;
+    // The one who requests.
+    private final UUID idFrom;
+    // The one requested.
+    private final UUID idTo;
+    // One of: pending, accepted, rejected.
+    private final String status;
 
-    public FriendRequest(UUID idFrom, UUID idTo, String status) {
+    public FriendRequest(UUID idFrom, UUID idTo) {
         super(new Tuple<>(new Tuple<>(idFrom, idTo), LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS)));
         this.idFrom = idFrom;
         this.idTo = idTo;
-        this.status = status;
+        this.status = "pending";
         date = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS);
     }
 

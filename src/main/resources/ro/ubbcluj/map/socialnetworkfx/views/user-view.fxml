@@ -2,54 +2,59 @@
 
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
-
-<VBox prefHeight="500.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ro.ubbcluj.map.socialnetworkfx.controllers.UserController">
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<VBox xmlns:fx="http://javafx.com/fxml/1" prefHeight="500.0" prefWidth="600.0"
+      xmlns="http://javafx.com/javafx/11.0.14-internal" fx:controller="ro.ubbcluj.map.socialnetworkfx.controllers.UserController">
     <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
     </padding>
-    <TableView fx:id="userTableView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="400.0" prefWidth="380.0">
+    <TableView fx:id="userTableView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+               prefHeight="400.0" prefWidth="380.0">
         <columns>
-            <TableColumn fx:id="userID" editable="false" prefWidth="120.0" sortable="false" text="ID" />
-            <TableColumn fx:id="userFirstName" editable="false" prefWidth="120.0" text="First Name" />
-            <TableColumn fx:id="userLastName" editable="false" prefWidth="120.0" text="Last Name" />
-            <TableColumn fx:id="userEmail" editable="false" prefWidth="199.0" text="Email" />
+            <TableColumn fx:id="userID" editable="false" prefWidth="120.0" sortable="false" text="ID"/>
+            <TableColumn fx:id="userFirstName" editable="false" prefWidth="120.0" text="First Name"/>
+            <TableColumn fx:id="userLastName" editable="false" prefWidth="120.0" text="Last Name"/>
+            <TableColumn fx:id="userEmail" editable="false" prefWidth="199.0" text="Email"/>
         </columns>
         <padding>
-            <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+            <Insets bottom="10.0" left="20.0" right="20.0" top="10.0"/>
         </padding>
         <VBox.margin>
-            <Insets top="5.0" />
+            <Insets top="5.0"/>
         </VBox.margin>
     </TableView>
     <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="30.0">
-        <Button mnemonicParsing="false" onAction="#userAddAction" prefHeight="40.0" prefWidth="130.0" text="Add" textAlignment="CENTER">
+        <Button mnemonicParsing="false" onAction="#userAddAction" prefHeight="40.0" prefWidth="130.0" text="Add"
+                textAlignment="CENTER">
             <font>
-                <Font name="Ubuntu" size="14.0" />
+                <Font name="Ubuntu" size="14.0"/>
             </font>
             <padding>
-                <Insets bottom="10.0" left="30.0" right="30.0" top="10.0" />
+                <Insets bottom="10.0" left="30.0" right="30.0" top="10.0"/>
             </padding>
         </Button>
-        <Button fx:id="userRemoveButton" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#userRemoveAction" prefHeight="40.0" prefWidth="130.0" text="Remove" textAlignment="CENTER">
+        <Button fx:id="userRemoveButton" layoutX="10.0" layoutY="10.0" mnemonicParsing="false"
+                onAction="#userRemoveAction" prefHeight="40.0" prefWidth="130.0" text="Remove" textAlignment="CENTER">
             <font>
-                <Font name="Ubuntu" size="14.0" />
+                <Font name="Ubuntu" size="14.0"/>
             </font>
             <padding>
-                <Insets bottom="10.0" left="30.0" right="30.0" top="10.0" />
+                <Insets bottom="10.0" left="30.0" right="30.0" top="10.0"/>
             </padding>
         </Button>
-        <Button fx:id="userUpdateButton" layoutX="72.0" layoutY="10.0" mnemonicParsing="false" onAction="#userUpdateAction" prefHeight="40.0" prefWidth="130.0" text="Update">
+        <Button fx:id="userUpdateButton" layoutX="72.0" layoutY="10.0" mnemonicParsing="false"
+                onAction="#userUpdateAction" prefHeight="40.0" prefWidth="130.0" text="Update">
             <font>
-                <Font name="Ubuntu" size="14.0" />
+                <Font name="Ubuntu" size="14.0"/>
             </font>
             <padding>
-                <Insets bottom="10.0" left="30.0" right="30.0" top="10.0" />
+                <Insets bottom="10.0" left="30.0" right="30.0" top="10.0"/>
             </padding>
         </Button>
         <VBox.margin>
-            <Insets bottom="20.0" top="30.0" />
+            <Insets bottom="20.0" top="30.0"/>
         </VBox.margin>
     </HBox>
 </VBox>

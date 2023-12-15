@@ -220,8 +220,9 @@ public abstract class DBRepository<ID, E extends Entity<ID>> implements Reposito
                 ResultSet resultSetSelect = statementSelect.executeQuery();
                 if (resultSetSelect.next()) {
                     try (PreparedStatement statementDelete = this.statementDelete(connection, id)) {
+                        Optional<E> deleted = Optional.of(this.extractFromResultSet(resultSetSelect));
                         statementDelete.execute();
-                        return Optional.of(this.extractFromResultSet(resultSetSelect));
+                        return deleted;
                     } catch (SQLException sqlException) {
                         throw new RepositoryException(sqlException.getMessage());
                     }
