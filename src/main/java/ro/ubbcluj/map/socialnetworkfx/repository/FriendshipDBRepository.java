@@ -2,9 +2,12 @@ package ro.ubbcluj.map.socialnetworkfx.repository;
 
 import ro.ubbcluj.map.socialnetworkfx.entity.Friendship;
 import ro.ubbcluj.map.socialnetworkfx.entity.Tuple;
+import ro.ubbcluj.map.socialnetworkfx.entity.User;
 import ro.ubbcluj.map.socialnetworkfx.exception.RepositoryException;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class FriendshipDBRepository extends DBRepository<Tuple<UUID, UUID>, Friendship> {
@@ -107,6 +110,77 @@ public class FriendshipDBRepository extends DBRepository<Tuple<UUID, UUID>, Frie
         } catch (SQLException sqlException) {
             throw new RepositoryException(sqlException.getMessage());
         }
+    }
+
+    @Override
+    protected PreparedStatement statementSelectOnPage(Connection connection, int page, int noOfItems) throws RepositoryException {
+        int selectOffset = page * noOfItems - 1;
+        String sql = "select * from friendships limit ? offset ?";
+        try {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setInt(1, noOfItems);
+            statement.setInt(2, selectOffset);
+            return statement;
+        } catch (SQLException sqlException) {
+            throw new RepositoryException(sqlException.getMessage());
+        }
+    }
+
+    /**
+     * Retrieves the friends of a user from a specific page.
+     * @param page Page from which to retrieve the friends.
+     * @param noOfItems Number of items per page.
+     * @param userId User ID of the user we search the friends of.
+     * @return List of users that are friends with the user.
+     * @throws RepositoryException If the retrieval fails.
+     */
+    public List<User> getFriendsFromPage(int page, int noOfItems, UUID userId) throws RepositoryException {
+        List<User> friends = new ArrayList<>();
+        int selectOffset = page * noOfItems;
+
+        String sql = "select * from friendships where id_user1 = ? OR id_user2 = ? limit ? offset ?";
+        try (Connection connection = this.connect()) {
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                statement.setObject(1, userId);
+                statement.setObject(2, userId);
+                statement.setInt(3, noOfItems);
+                statement.setInt(4, selectOffset);
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    while (resultSet.next()) {
+                        String sqlUser = "select * from users where id = ?";
+                        try (PreparedStatement statementUser = connection.prepareStatement(sqlUser)) {
+                            if (resultSet.getString("id_user1").equals(userId.toString())) {
+                                statementUser.setObject(1, resultSet.getObject("id_user2"));
+                            } else {
+                                statementUser.setObject(1, resultSet.getObject("id_user1"));
+                            }
+                            try (ResultSet resultSetUser = statementUser.executeQuery()) {
+                                while (resultSetUser.next()) {
+                                    UUID id = UUID.fromString(resultSetUser.getString("id"));
+                                    String firstName = resultSetUser.getString("first_name");
+                                    String lastName = resultSetUser.getString("last_name");
+                                    String email = resultSetUser.getString("email");
+                                    String password = resultSetUser.getString("password");
+
+                                    friends.add(new User(id, firstName, lastName, email, password));
+                                }
+                            } catch (SQLException sqlException) {
+                                throw new RepositoryException(sqlException.getMessage());
+                            }
+                        } catch (SQLException sqlException) {
+                            throw new RepositoryException(sqlException.getMessage());
+                        }
+                    }
+                } catch (SQLException sqlException) {
+                    throw new RepositoryException(sqlException.getMessage());
+                }
+            } catch (SQLException sqlException) {
+                throw new RepositoryException(sqlException.getMessage());
+            }
+        } catch (SQLException sqlException) {
+            throw new RepositoryException(sqlException.getMessage());
+        }
+        return friends;
     }
 
     @Override

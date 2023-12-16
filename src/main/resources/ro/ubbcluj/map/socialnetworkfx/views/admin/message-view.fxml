@@ -8,7 +8,7 @@
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="600.0" prefWidth="600.0"
             xmlns="http://javafx.com/javafx/17.0.6"
             fx:id="messageLayout"
-            fx:controller="ro.ubbcluj.map.socialnetworkfx.controllers.MessageController">
+            fx:controller="ro.ubbcluj.map.socialnetworkfx.controllers.AdminInterface.MessageController">
     <top>
         <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="30.0" BorderPane.alignment="CENTER">
             <Button mnemonicParsing="false" onAction="#viewMessagesLayout" text="View Messages">

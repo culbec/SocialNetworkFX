@@ -1,6 +1,7 @@
-package ro.ubbcluj.map.socialnetworkfx.controllers;
+package ro.ubbcluj.map.socialnetworkfx.controllers.AdminInterface;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
@@ -16,6 +17,8 @@ public class UserUpdateDialogue {
     public TextField emailField;
     @FXML
     private TextField idField;
+    @FXML
+    private PasswordField passwordField;
     // Boolean variable which indicates if the cancel button was pressed.
     private boolean cancelled = false;
 
@@ -27,18 +30,13 @@ public class UserUpdateDialogue {
      * @param lastName  User lastname.
      * @param email     User email.
      */
-    public void setFields(String id, String firstName, String lastName, String email) {
-        // Clearing the fields first.
-        this.idField.clear();
-        this.firstNameField.clear();
-        this.lastNameField.clear();
-        this.emailField.clear();
-
+    public void setFields(String id, String firstName, String lastName, String email, String password) {
         // Setting the fields.
         this.idField.setText(id);
         this.firstNameField.setPromptText(firstName);
         this.lastNameField.setPromptText(lastName);
         this.emailField.setPromptText(email);
+        this.passwordField.setText(password);
     }
 
     /**
@@ -52,6 +50,7 @@ public class UserUpdateDialogue {
         String firstName = firstNameField.getText();
         String lastName = lastNameField.getText();
         String email = emailField.getText();
+        String password = passwordField.getText();
 
         // Inserting the data into a map.
         Map<String, String> map = new HashMap<>();
@@ -59,6 +58,7 @@ public class UserUpdateDialogue {
         map.put("firstName", firstName);
         map.put("lastName", lastName);
         map.put("email", email);
+        map.put("password", password);
 
         // Closing the window.
         Stage stage = (Stage) this.firstNameField.getScene().getWindow();

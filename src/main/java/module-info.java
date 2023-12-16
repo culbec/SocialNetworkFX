@@ -2,6 +2,7 @@ module ro.ubbcluj.map.socialnetworkfx {
     requires javafx.controls;
     requires javafx.fxml;
     requires java.sql;
+    requires spring.security.core;
 
     exports ro.ubbcluj.map.socialnetworkfx;
     opens ro.ubbcluj.map.socialnetworkfx to javafx.fxml;
@@ -29,4 +30,8 @@ module ro.ubbcluj.map.socialnetworkfx {
 
     exports ro.ubbcluj.map.socialnetworkfx.utility.observer;
     opens ro.ubbcluj.map.socialnetworkfx.utility.observer to javafx.fxml;
+    exports ro.ubbcluj.map.socialnetworkfx.controllers.UserInterface;
+    opens ro.ubbcluj.map.socialnetworkfx.controllers.UserInterface to javafx.fxml;
+    exports ro.ubbcluj.map.socialnetworkfx.controllers.AdminInterface;
+    opens ro.ubbcluj.map.socialnetworkfx.controllers.AdminInterface to javafx.fxml;
 }

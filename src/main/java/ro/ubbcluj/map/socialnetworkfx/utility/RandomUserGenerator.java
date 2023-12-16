@@ -44,7 +44,7 @@ public class RandomUserGenerator {
             String lastName = LASTNAMES.get(randomIndexLastName);
             String email = firstName.toLowerCase() + "." + lastName.toLowerCase() + "@mail.com";
 
-            users.add(new User(firstName, lastName, email));
+            users.add(new User(firstName, lastName, email, "1234"));
         }
 
         return users;

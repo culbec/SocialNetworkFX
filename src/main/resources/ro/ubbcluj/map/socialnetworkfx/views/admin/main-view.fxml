@@ -6,10 +6,11 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:id="mainLayout" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:id="mainLayout" maxHeight="1.7976931348623157E308"
+            maxWidth="1.7976931348623157E308"
             minHeight="600.0" minWidth="600.0" prefHeight="1000.0" prefWidth="1200.0"
             xmlns="http://javafx.com/javafx/11.0.14-internal"
-            fx:controller="ro.ubbcluj.map.socialnetworkfx.controllers.AdminController">
+            fx:controller="ro.ubbcluj.map.socialnetworkfx.controllers.AdminInterface.AdminController">
     <top>
         <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
@@ -70,7 +71,7 @@
             </HBox>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                 <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                    <Image url="@../images/mascot.jpg"/>
+                    <Image url="@../../images/mascot.jpg"/>
                 </ImageView>
             </HBox>
         </VBox>

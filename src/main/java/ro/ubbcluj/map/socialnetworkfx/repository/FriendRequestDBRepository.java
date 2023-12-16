@@ -126,6 +126,19 @@ public class FriendRequestDBRepository extends DBRepository<Tuple<Tuple<UUID, UU
     }
 
     @Override
+    protected PreparedStatement statementSelectOnPage(Connection connection, int noOfItems, int selectOffset) throws RepositoryException {
+        String sql = "select * from friendrequests limit ? offset ?";
+        try {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setInt(1, noOfItems);
+            statement.setInt(2, selectOffset);
+            return statement;
+        } catch (SQLException sqlException) {
+            throw new RepositoryException(sqlException.getMessage());
+        }
+    }
+
+    @Override
     protected FriendRequest extractFromResultSet(ResultSet resultSet) throws SQLException {
         UUID idUser1 = UUID.fromString(resultSet.getString("id_user1"));
         UUID idUser2 = UUID.fromString(resultSet.getString("id_user2"));

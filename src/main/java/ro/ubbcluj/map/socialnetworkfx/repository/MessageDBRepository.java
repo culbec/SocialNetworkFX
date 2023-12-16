@@ -107,6 +107,19 @@ public class MessageDBRepository extends DBRepository<UUID, Message> {
     }
 
     @Override
+    protected PreparedStatement statementSelectOnPage(Connection connection, int noOfItems, int selectOffset) throws RepositoryException {
+        String sql = "select * from messages limit ? offset ?";
+        try {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setInt(1, noOfItems);
+            statement.setInt(2, selectOffset);
+            return statement;
+        } catch (SQLException sqlException) {
+            throw new RepositoryException(sqlException.getMessage());
+        }
+    }
+
+    @Override
     protected Message extractFromResultSet(ResultSet resultSet) throws SQLException {
         UUID messageId = UUID.fromString(resultSet.getString(1));
         String messageText = resultSet.getString(2);

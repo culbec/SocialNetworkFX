@@ -10,18 +10,22 @@ public class User extends Entity<UUID> {
     private String firstName;
     private String lastName;
     private String email;
+    private String password;
 
-    /**
-     * Initializes a User
-     *
-     * @param firstName First name of the User
-     * @param lastName  Last name of the User
-     */
     public User(String firstName, String lastName, String email) {
         super(UUID.randomUUID());
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+        this.password = null;
+    }
+
+    public User(String firstName, String lastName, String email, String password) {
+        super(UUID.randomUUID());
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
     }
 
     public User(UUID uuid, String firstName, String lastName, String email) {
@@ -29,6 +33,15 @@ public class User extends Entity<UUID> {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+        this.password = null;
+    }
+
+    public User(UUID uuid, String firstName, String lastName, String email, String password) {
+        super(uuid);
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
     }
 
     /**
@@ -77,12 +90,24 @@ public class User extends Entity<UUID> {
     }
 
     /**
+     * Getter for the password of the user.
+     * @return Password of the user.
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
      * Setter for the email of the user.
      *
      * @param email New email of the user.
      */
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     @Override
@@ -96,7 +121,7 @@ public class User extends Entity<UUID> {
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), firstName, lastName);
+        return Objects.hash(super.hashCode(), firstName, lastName, email);
     }
 
     @Override

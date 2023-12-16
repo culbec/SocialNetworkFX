@@ -1,6 +1,7 @@
-package ro.ubbcluj.map.socialnetworkfx.controllers;
+package ro.ubbcluj.map.socialnetworkfx.controllers.AdminInterface;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
@@ -17,6 +18,8 @@ public class UserAddDialogue {
     private TextField lastNameField;
     @FXML
     private TextField emailField;
+    @FXML
+    private PasswordField passwordField;
 
     // Boolean variable which indicates if the cancel button was pressed.
     private boolean cancelled = false;
@@ -32,12 +35,14 @@ public class UserAddDialogue {
         String firstName = firstNameField.getText();
         String lastName = lastNameField.getText();
         String email = emailField.getText();
+        String password = passwordField.getText();
 
         // Inserting the data into a map.
         Map<String, String> map = new HashMap<>();
         map.put("firstName", firstName);
         map.put("lastName", lastName);
         map.put("email", email);
+        map.put("password", password);
 
         // Closing the dialogue.
         Stage stage = (Stage) this.firstNameField.getScene().getWindow();

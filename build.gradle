@@ -6,6 +6,11 @@ plugins {
     id 'org.beryx.jlink' version '2.25.0'
 }
 
+wrapper {
+    gradleVersion = '7.2'
+}
+
+
 group 'ro.ubbcluj.map'
 version '1.0-SNAPSHOT'
 
@@ -33,6 +38,7 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
     // https://mvnrepository.com/artifact/org.postgresql/postgresql
     implementation group: 'org.postgresql', name: 'postgresql', version: '42.6.0'
+    implementation 'org.springframework.security:spring-security-core:5.0.0.RELEASE'
 }
 
 test {

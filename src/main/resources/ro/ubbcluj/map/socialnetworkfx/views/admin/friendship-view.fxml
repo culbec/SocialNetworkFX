@@ -6,7 +6,7 @@
 <?import javafx.scene.text.Font?>
 <VBox xmlns:fx="http://javafx.com/fxml/1" alignment="CENTER" prefHeight="850.0" prefWidth="600.0"
       xmlns="http://javafx.com/javafx/11.0.14-internal"
-      fx:controller="ro.ubbcluj.map.socialnetworkfx.controllers.FriendshipController">
+      fx:controller="ro.ubbcluj.map.socialnetworkfx.controllers.AdminInterface.FriendshipController">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
     </padding>

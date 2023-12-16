@@ -1,4 +1,4 @@
-package ro.ubbcluj.map.socialnetworkfx.controllers;
+package ro.ubbcluj.map.socialnetworkfx.controllers.AdminInterface;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -9,6 +9,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.stage.Stage;
 import ro.ubbcluj.map.socialnetworkfx.SocialNetworkApplication;
+import ro.ubbcluj.map.socialnetworkfx.controllers.PopupAlert;
 import ro.ubbcluj.map.socialnetworkfx.entity.FriendRequest;
 import ro.ubbcluj.map.socialnetworkfx.entity.Tuple;
 import ro.ubbcluj.map.socialnetworkfx.entity.User;
@@ -134,7 +135,7 @@ public class FriendshipController implements Observer<SocialNetworkEvent> {
         friendshipAddStage.setOnCloseRequest(event -> friendshipAddDialogue.handleCancel());
 
         // Setting the service for the dialogue controller.
-        friendshipAddDialogue.setService(this.service);
+        friendshipAddDialogue.initDialogue(this.service);
 
         // Showing the dialogue and waiting for execution.
         friendshipAddStage.showAndWait();

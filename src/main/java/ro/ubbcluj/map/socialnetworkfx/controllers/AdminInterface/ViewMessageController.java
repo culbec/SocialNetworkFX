@@ -1,7 +1,8 @@
-package ro.ubbcluj.map.socialnetworkfx.controllers;
+package ro.ubbcluj.map.socialnetworkfx.controllers.AdminInterface;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import ro.ubbcluj.map.socialnetworkfx.controllers.PopupAlert;
 import ro.ubbcluj.map.socialnetworkfx.entity.Message;
 import ro.ubbcluj.map.socialnetworkfx.entity.ReplyMessage;
 import ro.ubbcluj.map.socialnetworkfx.entity.User;

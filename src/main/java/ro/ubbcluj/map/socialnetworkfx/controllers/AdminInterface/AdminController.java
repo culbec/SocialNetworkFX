@@ -1,4 +1,4 @@
-package ro.ubbcluj.map.socialnetworkfx.controllers;
+package ro.ubbcluj.map.socialnetworkfx.controllers.AdminInterface;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -31,8 +31,8 @@ public class AdminController {
     // Popup headers and texts.
     private static final Map<PopupEnum, Tuple<String, String>> POPUPS = new HashMap<>();
     // Service dependency.
-    private final Service service;
-    // FXMLLoader Map that stores different loaders for different layouts.
+    private Service service;
+    // Parent Map that stores different loaders for different layouts.
     @FXML
     private final Map<String, Parent> layouts = new TreeMap<>();
     // FXML elements.
@@ -51,33 +51,49 @@ public class AdminController {
         FriendRequestDBRepository friendRequestDBRepository = new FriendRequestDBRepository(DB_URL, USERNAME, PASSWORD);
         MessageDBRepository messageDBRepository = new MessageDBRepository(DB_URL, USERNAME, PASSWORD);
 
-        // Initializing the service.
-        this.service = new Service(userDBRepository, friendshipDBRepository, friendRequestDBRepository, messageDBRepository);
+        // Returning the service.
+        this.service =  new Service(userDBRepository, friendshipDBRepository, friendRequestDBRepository, messageDBRepository);
 
+        this.initController(service);
+    }
+
+    /**
+     * Generates 20 random users and adds them to the database.
+     * @param service Service to add the users to.
+     */
+    public static void generateRandomUsers(Service service) {
         // Trying to add 20 new users if there are less than 10 users.
-        if (this.service.getUsers().size() < 10) {
+        if (service.getUsers().size() < 10) {
             ArrayList<User> users = RandomUserGenerator.generate20Users();
 
             users.forEach(user -> {
                 try {
-                    this.service.addUser(user.getFirstName(), user.getLastName(), user.getEmail());
+                    service.addUser(user.getFirstName(), user.getLastName(), user.getEmail(), user.getPassword());
                 } catch (ServiceException sE) {
                     System.err.println(sE.getMessage());
                 }
             });
 
             // Adding 20 hardcoded friendships
-            this.service.addFriendship(this.service.getUsers().get(0).getId(), this.service.getUsers().get(1).getId());
-            this.service.addFriendship(this.service.getUsers().get(0).getId(), this.service.getUsers().get(2).getId());
-            this.service.addFriendship(this.service.getUsers().get(0).getId(), this.service.getUsers().get(3).getId());
-            this.service.addFriendship(this.service.getUsers().get(0).getId(), this.service.getUsers().get(4).getId());
-            this.service.addFriendship(this.service.getUsers().get(0).getId(), this.service.getUsers().get(5).getId());
-            this.service.addFriendship(this.service.getUsers().get(1).getId(), this.service.getUsers().get(5).getId());
-            this.service.addFriendship(this.service.getUsers().get(1).getId(), this.service.getUsers().get(6).getId());
-            this.service.addFriendship(this.service.getUsers().get(1).getId(), this.service.getUsers().get(7).getId());
-            this.service.addFriendship(this.service.getUsers().get(3).getId(), this.service.getUsers().get(2).getId());
-            this.service.addFriendship(this.service.getUsers().get(4).getId(), this.service.getUsers().get(3).getId());
+            service.addFriendship(service.getUsers().get(0).getId(), service.getUsers().get(1).getId());
+            service.addFriendship(service.getUsers().get(0).getId(), service.getUsers().get(2).getId());
+            service.addFriendship(service.getUsers().get(0).getId(), service.getUsers().get(3).getId());
+            service.addFriendship(service.getUsers().get(0).getId(), service.getUsers().get(4).getId());
+            service.addFriendship(service.getUsers().get(0).getId(), service.getUsers().get(5).getId());
+            service.addFriendship(service.getUsers().get(1).getId(), service.getUsers().get(5).getId());
+            service.addFriendship(service.getUsers().get(1).getId(), service.getUsers().get(6).getId());
+            service.addFriendship(service.getUsers().get(1).getId(), service.getUsers().get(7).getId());
+            service.addFriendship(service.getUsers().get(3).getId(), service.getUsers().get(2).getId());
+            service.addFriendship(service.getUsers().get(4).getId(), service.getUsers().get(3).getId());
         }
+    }
+
+    public void initController(Service service) throws IOException {
+        // Initializing the service dependency.
+        this.service = service;
+
+        // Trying to add new users.
+        generateRandomUsers(service);
 
         // Adding different loaders to the main app.
         this.addLayouts();

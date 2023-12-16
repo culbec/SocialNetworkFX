@@ -12,13 +12,13 @@ public class TestCommunities {
     public static void run() {
         Service service = getService();
 
-        service.addUser("Ion", "Remus", "ion.remus@mail.com");
-        service.addUser("Marius", "Chiriac", "marius.chiriac@mail.com");
-        service.addUser("Vlad", "Remus", "vlad.remus@mail.com");
-        service.addUser("Florin", "Remus", "florin.remus@mail.com");
-        service.addUser("Cosmin", "Popovici", "cosmin.popovici@mail.com");
-        service.addUser("Laura", "Matei", "laura.matei@mail.com");
-        service.addUser("Ionut", "Andrei", "ionut.andrei@mail.com");
+        service.addUser("Ion", "Remus", "ion.remus@mail.com", null);
+        service.addUser("Marius", "Chiriac", "marius.chiriac@mail.com", null);
+        service.addUser("Vlad", "Remus", "vlad.remus@mail.com", null);
+        service.addUser("Florin", "Remus", "florin.remus@mail.com", null);
+        service.addUser("Cosmin", "Popovici", "cosmin.popovici@mail.com", null);
+        service.addUser("Laura", "Matei", "laura.matei@mail.com", null);
+        service.addUser("Ionut", "Andrei", "ionut.andrei@mail.com", null);
 
         ArrayList<User> users = service.getUsers();
 
@@ -42,8 +42,6 @@ public class TestCommunities {
         InMemoryRepository<Tuple<UUID, UUID>, Friendship> friendshipInMemoryRepository = new InMemoryRepository<>();
         InMemoryRepository<Tuple<Tuple<UUID, UUID>, LocalDateTime>, FriendRequest> friendRequestInMemoryRepository = new InMemoryRepository<>();
         InMemoryRepository<UUID, Message> messageInMemoryRepository = new InMemoryRepository<>();
-
-        Service service = new Service(userInMemoryRepository, friendshipInMemoryRepository, friendRequestInMemoryRepository, messageInMemoryRepository);
-        return service;
+        return new Service(userInMemoryRepository, friendshipInMemoryRepository, friendRequestInMemoryRepository, messageInMemoryRepository);
     }
 }

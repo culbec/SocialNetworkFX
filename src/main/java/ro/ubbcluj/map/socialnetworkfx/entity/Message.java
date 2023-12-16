@@ -64,11 +64,6 @@ public class Message extends Entity<UUID> {
 
     @Override
     public String toString() {
-        return "Message{" +
-                "from=" + from +
-                ", to=" + to +
-                ", message='" + messageText + '\'' +
-                ", date=" + date +
-                '}';
+        return "[" + this.id + " " + this.date.truncatedTo(ChronoUnit.SECONDS) + "] " + this.messageText;
     }
 }

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import java.net.URL?>
+<AnchorPane fx:id="profileLayout" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="460.0" prefWidth="870.0" xmlns="http://javafx.com/javafx/17.0.6" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="ro.ubbcluj.map.socialnetworkfx.controllers.UserInterface.ProfileController">
+    <children>
+        <ImageView fitHeight="304.0" fitWidth="289.0" layoutX="39.0" layoutY="87.0" pickOnBounds="true"
+                   preserveRatio="true">
+            <image>
+                <Image url="@../../images/user-default.jpg"/>
+            </image>
+        </ImageView>
+        <VBox fx:id="profileBox" layoutX="360.0" layoutY="15.0" prefHeight="430.0" prefWidth="487.0">
+            <children>
+                <VBox prefHeight="300.0" prefWidth="485.0" spacing="20.0">
+                    <children>
+                        <VBox prefWidth="425.0" spacing="5.0">
+                            <children>
+                                <Label text="First name">
+                                    <font>
+                                        <Font name="JetBrainsMonoNL NFP Regular" size="14.0"/>
+                                    </font>
+                                </Label>
+                                <TextField fx:id="firstNameField">
+                                    <padding>
+                                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                                    </padding>
+                                </TextField>
+                            </children>
+                        </VBox>
+                        <VBox spacing="5.0">
+                            <children>
+                                <Label text="Last name">
+                                    <font>
+                                        <Font name="JetBrainsMonoNL NFP Regular" size="14.0"/>
+                                    </font>
+                                </Label>
+                                <TextField fx:id="lastNameField">
+                                    <padding>
+                                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                                    </padding>
+                                </TextField>
+                            </children>
+                        </VBox>
+                        <VBox spacing="5.0">
+                            <children>
+                                <Label text="Email">
+                                    <font>
+                                        <Font name="JetBrainsMonoNL NFP Regular" size="14.0"/>
+                                    </font>
+                                </Label>
+                                <TextField fx:id="emailField">
+                                    <padding>
+                                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                                    </padding>
+                                </TextField>
+                            </children>
+                        </VBox>
+                    </children>
+                    <padding>
+                        <Insets left="30.0" right="30.0" top="20.0"/>
+                    </padding>
+                </VBox>
+                <HBox alignment="CENTER" prefHeight="100.0" prefWidth="485.0" spacing="30.0">
+                    <children>
+                        <Button mnemonicParsing="false" onAction="#updateButtonAction" text="Update">
+                            <padding>
+                                <Insets bottom="10.0" left="20.0" right="20.0" top="10.0"/>
+                            </padding>
+                            <font>
+                                <Font name="JetBrainsMonoNL NFP Regular" size="12.0"/>
+                            </font>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#deleteButtonAction" text="Delete account">
+                            <padding>
+                                <Insets bottom="10.0" left="20.0" right="20.0" top="10.0"/>
+                            </padding>
+                            <font>
+                                <Font name="JetBrainsMonoNL NFP Regular" size="12.0"/>
+                            </font>
+                        </Button>
+                    </children>
+                    <VBox.margin>
+                        <Insets top="20.0"/>
+                    </VBox.margin>
+                </HBox>
+            </children>
+        </VBox>
+    </children>
+    <stylesheets>
+        <URL value="@../../styles/default-style.css"/>
+        <URL value="@../../styles/profile-style.css"/>
+    </stylesheets>
+</AnchorPane>

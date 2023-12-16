@@ -1,4 +1,4 @@
-package ro.ubbcluj.map.socialnetworkfx.controllers;
+package ro.ubbcluj.map.socialnetworkfx.controllers.AdminInterface;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
@@ -13,18 +13,13 @@ public class FriendshipAddDialogue {
     @FXML
     private ComboBox<User> secondUserComboBox;
 
-    // Service dependency for populating the combo boxes.
-    private Service service;
-
     // Boolean variable which indicates if the cancel button was pressed.
     private boolean cancelled = false;
 
-    public void setService(Service service) {
-        this.service = service;
-
+    public void initDialogue(Service service) {
         // Populating the combo boxes.
-        this.firstUserComboBox.getItems().addAll(this.service.getUsers());
-        this.secondUserComboBox.getItems().addAll(this.service.getUsers());
+        this.firstUserComboBox.getItems().addAll(service.getUsers());
+        this.secondUserComboBox.getItems().addAll(service.getUsers());
     }
 
     /**

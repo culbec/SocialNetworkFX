@@ -39,9 +39,6 @@ public class ReplyMessage extends Message {
 
     @Override
     public String toString() {
-        return "ReplyMessage{" +
-                "messageId=" + messageId +
-                super.toString() +
-                '}';
+        return "Reply to " + "{" + this.getMessage() + "}" + super.toString();
     }
 }

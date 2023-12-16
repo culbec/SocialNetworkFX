@@ -1,0 +1,6 @@
+#layoutsBar {
+    -fx-background-color: linear-gradient(#38a8ff, #c5cbff);
+    -fx-border-style: solid;
+    -fx-border-width: 1px;
+    -fx-border-color: black;
+}

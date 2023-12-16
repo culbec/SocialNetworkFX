@@ -1,0 +1,70 @@
+.root {
+    -fx-background-color: #ffffff;
+    -fx-border-width: 2px;
+    -fx-border-style: solid;
+    -fx-border-color: black;
+
+    -fx-font: 12pt 'JetBrainsMonoNL NFP';
+}
+
+.button {
+    -fx-font-size: 12pt;
+    -fx-text-fill: #ffffff;
+
+    -fx-background-color: #424677;
+    -fx-background-radius: 20px;
+
+    -fx-border-width: 1px;
+    -fx-border-radius: 20px;
+    -fx-border-style: solid;
+    -fx-border-color: black;
+
+    -fx-cursor: crosshair;
+    -fx-padding: 10 10 10 10;
+}
+
+.button:hover {
+    -fx-background-color: #383b64;
+}
+
+.check-box .box {
+    -fx-background-color: white;
+    -fx-border-color:grey;
+    -fx-border-radius:3px;
+}
+
+.check-box:selected .mark {
+    -fx-background-color: white;
+}
+
+.check-box:selected .box {
+    -fx-background-color: #28a3f4;
+}
+
+.table-view {
+    -fx-control-inner-background: #ffffff;
+}
+
+.table-view .column-header {
+    -fx-background-color: linear-gradient(#38a8ff, #c5cbff);
+    -fx-border-width: 0 1 1 0;
+    -fx-border-color: #000000;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: #000000;
+}
+
+.table-view .table-cell {
+    -fx-background-color: #fff;
+    -fx-text-fill: #333;
+}
+
+.table-view .table-cell:selected {
+    -fx-background-color: #28a3f4;
+    -fx-text-fill: #fff;
+}
+
+.list-view .list-cell {
+    -fx-font-size: 10pt;
+}

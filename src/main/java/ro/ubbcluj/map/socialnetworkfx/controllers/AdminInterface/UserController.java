@@ -1,4 +1,4 @@
-package ro.ubbcluj.map.socialnetworkfx.controllers;
+package ro.ubbcluj.map.socialnetworkfx.controllers.AdminInterface;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -12,6 +12,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import ro.ubbcluj.map.socialnetworkfx.SocialNetworkApplication;
+import ro.ubbcluj.map.socialnetworkfx.controllers.PopupAlert;
 import ro.ubbcluj.map.socialnetworkfx.entity.User;
 import ro.ubbcluj.map.socialnetworkfx.events.SocialNetworkEvent;
 import ro.ubbcluj.map.socialnetworkfx.events.UserEvent;
@@ -152,10 +153,11 @@ public class UserController implements Observer<SocialNetworkEvent> {
         String firstName = values.get("firstName");
         String lastName = values.get("lastName");
         String email = values.get("email");
+        String password = values.get("password");
 
         try {
             // Adding the user.
-            this.service.addUser(firstName, lastName, email);
+            this.service.addUser(firstName, lastName, email, password);
 
             // Showing a message of success.
             PopupEnum identifier = PopupEnum.ADD_USER_SUCCESS;
@@ -248,7 +250,7 @@ public class UserController implements Observer<SocialNetworkEvent> {
             UserUpdateDialogue userUpdateDialogue = userUpdateFXMLLoader.getController();
 
             // Setting text & prompt fields for each field in the dialogue.
-            userUpdateDialogue.setFields(user.getId().toString(), user.getFirstName(), user.getLastName(), user.getEmail());
+            userUpdateDialogue.setFields(user.getId().toString(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getPassword());
 
             // Preparing the stage for showing.
             Stage userUpdateStage = new Stage();
@@ -271,10 +273,11 @@ public class UserController implements Observer<SocialNetworkEvent> {
             String newFirstName = values.get("firstName");
             String newLastName = values.get("lastName");
             String newEmail = values.get("email");
+            String password = values.get("password");
 
             try {
                 // Updating the user.
-                User old = this.service.updateUser(new User(UUID.fromString(id), newFirstName, newLastName, newEmail));
+                User old = this.service.updateUser(new User(UUID.fromString(id), newFirstName, newLastName, newEmail, password));
 
                 // Showing a message of success.
                 PopupEnum identifier = PopupEnum.UPDATE_USER_SUCCESS;

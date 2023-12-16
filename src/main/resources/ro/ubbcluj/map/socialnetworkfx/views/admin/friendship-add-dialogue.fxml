@@ -6,7 +6,7 @@
 <?import javafx.scene.text.*?>
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="400.0" prefWidth="600.0"
             xmlns="http://javafx.com/javafx/11.0.14-internal"
-            fx:controller="ro.ubbcluj.map.socialnetworkfx.controllers.FriendshipAddDialogue">
+            fx:controller="ro.ubbcluj.map.socialnetworkfx.controllers.AdminInterface.FriendshipAddDialogue">
     <top>
         <Label text="Add Friendship" textAlignment="CENTER" underline="true" BorderPane.alignment="CENTER">
             <font>

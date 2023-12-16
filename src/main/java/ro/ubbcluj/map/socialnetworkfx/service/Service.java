@@ -5,10 +5,7 @@ import ro.ubbcluj.map.socialnetworkfx.events.*;
 import ro.ubbcluj.map.socialnetworkfx.exception.RepositoryException;
 import ro.ubbcluj.map.socialnetworkfx.exception.ServiceException;
 import ro.ubbcluj.map.socialnetworkfx.exception.ValidatorException;
-import ro.ubbcluj.map.socialnetworkfx.repository.FriendRequestDBRepository;
-import ro.ubbcluj.map.socialnetworkfx.repository.MessageDBRepository;
-import ro.ubbcluj.map.socialnetworkfx.repository.Repository;
-import ro.ubbcluj.map.socialnetworkfx.repository.UserDBRepository;
+import ro.ubbcluj.map.socialnetworkfx.repository.*;
 import ro.ubbcluj.map.socialnetworkfx.utility.Graph;
 import ro.ubbcluj.map.socialnetworkfx.utility.observer.Observable;
 import ro.ubbcluj.map.socialnetworkfx.utility.observer.Observer;
@@ -20,7 +17,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-public class Service implements AbstractService<UUID>, Observable<SocialNetworkEvent> {
+public class Service implements Observable<SocialNetworkEvent> {
     // Repository that stores Users.
     private final Repository<UUID, User> userRepository;
     // Repository that stores Friendships.
@@ -43,10 +40,20 @@ public class Service implements AbstractService<UUID>, Observable<SocialNetworkE
         this.messageRepository = messageRepository;
     }
 
-    @Override
-    public void addUser(String firstName, String lastName, String email) throws ServiceException {
+    /**
+     * Adds a user to the list of users.
+     *
+     * @param firstName The First name of the user to be added.
+     * @param lastName  The Last name of the user to be added.
+     * @param email     Email of the user to be added.
+     * @param password  Password of the user to be added.
+     * @throws ServiceException If the user couldn't be added.
+     */
+
+
+    public void addUser(String firstName, String lastName, String email, String password) throws ServiceException {
         // User that will be saved in the Repository
-        User user = new User(firstName, lastName, email);
+        User user = new User(firstName, lastName, email, password);
         try {
             // Validating the user so that it reaches the Repository in a valid state.
             new UserValidator().validate(user);
@@ -70,7 +77,14 @@ public class Service implements AbstractService<UUID>, Observable<SocialNetworkE
         this.notify(new UserEvent(EventType.ADD_USER, user, null));
     }
 
-    @Override
+    /**
+     * Removes a user from the list of users.
+     *
+     * @param userId ID of the user to be removed
+     * @return an {@code Optional} encapsulating the removed user.
+     * @throws ServiceException If the user can't be removed.
+     */
+
     public User removeUser(UUID userId) throws ServiceException {
         // Trying to delete the user from the Repository.
         Optional<User> deleted = this.userRepository.delete(userId);
@@ -100,7 +114,14 @@ public class Service implements AbstractService<UUID>, Observable<SocialNetworkE
         return deleted.get();
     }
 
-    @Override
+    /**
+     * Update the user with the specified ID with user.
+     *
+     * @param user New user.
+     * @return Old user.
+     * @throws ServiceException if the user couldn't be updated.
+     */
+
     public User updateUser(User user) throws ServiceException {
         try {
             // Validating the user so that it reaches the Repository in a valid state.
@@ -128,7 +149,14 @@ public class Service implements AbstractService<UUID>, Observable<SocialNetworkE
         }
     }
 
-    @Override
+    /**
+     * Gets a user based on its id.
+     *
+     * @param userId ID of the user to get.
+     * @return an {@code Optional} encapsulating the user.
+     * @throws ServiceException If the user couldn't be found.
+     */
+
     public User getUser(UUID userId) throws ServiceException {
         try {
             // Retrieving the user found in the repository.
@@ -146,7 +174,12 @@ public class Service implements AbstractService<UUID>, Observable<SocialNetworkE
         }
     }
 
-    @Override
+    /**
+     * Returns the user list.
+     *
+     * @return User list.
+     */
+
     public ArrayList<User> getUsers() {
         ArrayList<User> userList = new ArrayList<>();
 
@@ -155,17 +188,23 @@ public class Service implements AbstractService<UUID>, Observable<SocialNetworkE
         return userList;
     }
 
-    @Override
-    public ArrayList<User> getFriendsOf(UUID uuid) throws RepositoryException {
+    /**
+     * Returns an iterable of users which are friends with the user with the specified id.
+     *
+     * @param userId ID of user.
+     * @return Iterable with the friends of user with id = id
+     */
+
+    public ArrayList<User> getFriendsOf(UUID userId) throws RepositoryException {
         ArrayList<User> friends = new ArrayList<>();
 
         // Retrieving all friends of the user.
         this.friendshipRepository.getAll().forEach(friendship -> {
             // Deciding which one of the users is our user.
-            if (friendship.getId().getLeft().equals(uuid)) {
+            if (friendship.getId().getLeft().equals(userId)) {
                 Optional<User> friend = this.userRepository.getOne(friendship.getId().getRight());
                 friend.ifPresent(friends::add);
-            } else if (friendship.getId().getRight().equals(uuid)) {
+            } else if (friendship.getId().getRight().equals(userId)) {
                 Optional<User> friend = this.userRepository.getOne(friendship.getId().getLeft());
                 friend.ifPresent(friends::add);
             }
@@ -174,14 +213,29 @@ public class Service implements AbstractService<UUID>, Observable<SocialNetworkE
         return friends;
     }
 
-    @Override
-    public List<FriendRequest> getFriendRequestsOfUser(UUID userId) {
-        return StreamSupport.stream(this.friendRequestRepository.getAll().spliterator(), false)
-                .filter(friendRequest -> friendRequest.getIdTo().equals(userId) && friendRequest.getStatus().equals("pending"))
-                .toList();
+    /**
+     * Returns the list of friendships.
+     *
+     * @return The list of friendships.
+     */
+
+    public ArrayList<Friendship> getFriendships() {
+        ArrayList<Friendship> friendshipList = new ArrayList<>();
+
+        // Populating the friendship list.
+        this.friendshipRepository.getAll().forEach(friendshipList::add);
+        return friendshipList;
     }
 
-    @Override
+    /**
+     * Adds a friendship between two users.
+     *
+     * @param id1 ID of the first user in the friendship.
+     * @param id2 ID of the second user in the friendship.
+     * @throws ServiceException If the friendship already exists
+     */
+
+
     public void addFriendship(UUID id1, UUID id2) throws ServiceException {
         try {
             // Initializing a friendship.
@@ -202,7 +256,15 @@ public class Service implements AbstractService<UUID>, Observable<SocialNetworkE
         }
     }
 
-    @Override
+    /**
+     * Removes the friendship between two users.
+     *
+     * @param id1 ID of the first user.
+     * @param id2 ID of the second user.
+     * @return Friendship that was removed.
+     * @throws ServiceException If the friendship couldn't be found.
+     */
+
     public Friendship removeFriendship(UUID id1, UUID id2) throws ServiceException {
         // Retrieving the friendship between the two users.
         Optional<Friendship> friendship = this.friendshipRepository.getOne(new Tuple<>(id1, id2));
@@ -228,16 +290,9 @@ public class Service implements AbstractService<UUID>, Observable<SocialNetworkE
         return friendship.get();
     }
 
-    @Override
-    public ArrayList<Friendship> getFriendships() {
-        ArrayList<Friendship> friendshipList = new ArrayList<>();
-
-        // Populating the friendship list.
-        this.friendshipRepository.getAll().forEach(friendshipList::add);
-        return friendshipList;
-    }
-
-    @Override
+    /**
+     * Returns the number of communities and a list of the most active communities.
+     */
     public Tuple<Integer, List<List<UUID>>> communities() {
         // List, which will contain the members of the most active community.
         List<List<UUID>> communityMembers = new ArrayList<>();
@@ -298,7 +353,12 @@ public class Service implements AbstractService<UUID>, Observable<SocialNetworkE
         return new Tuple<>(noCommunities, communityMembers);
     }
 
-    @Override
+    /**
+     * Computes a list with users that have minimum N friends.
+     *
+     * @param N Minimum number of friends.
+     * @return List of users that have minimum N friends.
+     */
     public List<User> usersWithMinimumFriends(int N) {
         // Returning the list of users sorted by: Number of friends -> First name -> Last name, in ascending order.
         return this.getUsers().stream()
@@ -310,7 +370,13 @@ public class Service implements AbstractService<UUID>, Observable<SocialNetworkE
                 .toList();
     }
 
-    @Override
+    /**
+     * Returns the list of friends from a given month of the given user.
+     *
+     * @param userId ID of the user.
+     * @param month  Month of the friendship date.
+     * @return List of friends from a given month of the given user.
+     */
     public List<User> friendsFromMonth(UUID userId, String month) {
         // Retrieving the user from the repository.
         Optional<User> userOptional = this.userRepository.getOne(userId);
@@ -337,7 +403,12 @@ public class Service implements AbstractService<UUID>, Observable<SocialNetworkE
                 .collect(Collectors.toList());
     }
 
-    @Override
+    /**
+     * Returns a list of users for which the last name contains a given string.
+     *
+     * @param string String to verify.
+     * @return List of users for which the last name contains a given string.
+     */
     public List<User> usersWithStringInLastName(String string) throws ServiceException {
         try {
             // DB implemented operation, that's the explanation for the cast.
@@ -348,7 +419,23 @@ public class Service implements AbstractService<UUID>, Observable<SocialNetworkE
         }
     }
 
-    @Override
+    /**
+     * @param userId User ID of the user that received friend requests.
+     * @return A list with all friend requests.
+     */
+
+    public List<FriendRequest> getFriendRequestsOfUser(UUID userId) {
+        return StreamSupport.stream(this.friendRequestRepository.getAll().spliterator(), false)
+                .filter(friendRequest -> friendRequest.getIdTo().equals(userId) && friendRequest.getStatus().equals("pending"))
+                .toList();
+    }
+
+    /**
+     * Sends a friend request from a user to another.
+     *
+     * @param user1 User that sends the friend request.
+     * @param user2 User that receives the friend request.
+     */
     public void sendFriendRequest(User user1, User user2) {
         // Excluding cases when the values are not parsed -> null.
         if (user1 == null || user2 == null) {
@@ -373,41 +460,65 @@ public class Service implements AbstractService<UUID>, Observable<SocialNetworkE
         }
 
         // If not, we can proceed on sending the friend request.
-        this.friendRequestRepository.save(new FriendRequest(user1.getId(), user2.getId()));
+        FriendRequest friendRequest = new FriendRequest(user1.getId(), user2.getId());
+        this.friendRequestRepository.save(friendRequest);
+        this.notify(new FriendRequestEvent(EventType.ADD_FRIEND_REQUEST, null, friendRequest));
     }
 
-    @Override
+    /**
+     * Accepts a friend request between to users and make the two users friends.
+     *
+     * @param friendRequest Friend request between two users.
+     */
     public void acceptFriendRequest(FriendRequest friendRequest) {
         // Verifying that the friend request is not null.
         if (friendRequest != null) {
             // Updating the friend request internally.
             FriendRequest newFriendRequest = new FriendRequest(friendRequest.getIdFrom(), friendRequest.getIdTo(), "accepted", friendRequest.getDate());
             this.friendRequestRepository.update(newFriendRequest);
+            this.notify(new FriendRequestEvent(EventType.REMOVE_FRIEND_REQUEST, friendRequest, null));
 
             // Making the two users friends.
-            this.addFriendship(friendRequest.getIdFrom(), friendRequest.getIdTo());
+            Friendship friendship = new Friendship(friendRequest.getIdFrom(), friendRequest.getIdTo());
+            this.addFriendship(friendship.getId().getLeft(), friendship.getId().getRight());
         }
     }
 
-    @Override
+    /**
+     * Rejects a friend request between two users.
+     *
+     * @param friendRequest Friend request between two users.
+     */
     public void rejectFriendRequest(FriendRequest friendRequest) {
         // Verifying that the friend request is not null.
         if (friendRequest != null) {
             // Updating the status of the friend request.
             FriendRequest newFriendRequest = new FriendRequest(friendRequest.getIdFrom(), friendRequest.getIdTo(), "rejected", friendRequest.getDate());
             this.friendRequestRepository.update(newFriendRequest);
+            this.notify(new FriendRequestEvent(EventType.REMOVE_FRIEND_REQUEST, friendRequest, null));
         }
     }
 
-    @Override
+    /**
+     * Returns a list of messages between given users sorted by the date of sending.
+     *
+     * @param sender   User that sent messages.
+     * @param receiver User that received messages.
+     * @return A list of messages between given users.
+     */
     public List<Message> getMessagesBetweenUsers(User sender, User receiver) {
         List<Message> messages = ((MessageDBRepository) this.messageRepository).getMessagesBetweenUsers(sender.getId(), receiver.getId());
         messages.sort(Comparator.comparing(Message::getDate));
         return messages;
     }
 
-    @Override
-    public void sendMessage(Message message) {
+    /**
+     * Sends a message from a user to other users.
+     *
+     * @param message Message to be sent.
+     * @throws ServiceException If something went wrong with sending the message.
+     */
+    public void sendMessage(Message message) throws ServiceException {
         // Attempting to save the message.
         try {
             this.messageRepository.save(message);
@@ -416,6 +527,42 @@ public class Service implements AbstractService<UUID>, Observable<SocialNetworkE
         } catch (RepositoryException repositoryException) {
             throw new ServiceException(repositoryException.getMessage(), repositoryException.getCause());
         }
+    }
+
+    /**
+     * Determines if a user can log in to the network.
+     *
+     * @param userEmail Email of the user that wants to log in.
+     * @param password  Password entered by the user.
+     * @return The data of the User that tries to log in.
+     * @throws ServiceException If the user cannot log in to the network.
+     */
+    public User tryLoginUser(String userEmail, String password) throws ServiceException {
+        try {
+            return ((UserDBRepository) this.userRepository).retrieveExistingUser(userEmail, password);
+        } catch (RepositoryException rE) {
+            throw new ServiceException(rE.getMessage());
+        }
+    }
+
+    /**
+     * Retrieves maximum {@code noOfUsers} users of the page {@code page}.
+     *
+     * @param page      Page to retrieve.
+     * @param noOfUsers Number of users on the page.
+     * @return A list of users.
+     * @throws ServiceException If something went wrong with retrieving the users.
+     */
+    public List<User> getUsersFromPage(int page, int noOfUsers) throws ServiceException {
+        ((UserDBRepository) this.userRepository).setCurrentPage(page);
+        ((UserDBRepository) this.userRepository).setNoItems(noOfUsers);
+        return (List<User>) ((UserDBRepository) this.userRepository).getItemsOnPage();
+    }
+
+    public List<User> getFriendsFromPage(int page, int noOfUsers, User user) throws ServiceException {
+        ((FriendshipDBRepository) this.friendshipRepository).setCurrentPage(page);
+        ((FriendshipDBRepository) this.friendshipRepository).setNoItems(noOfUsers);
+        return ((FriendshipDBRepository) this.friendshipRepository).getFriendsFromPage(page, noOfUsers, user.getId());
     }
 
     @Override

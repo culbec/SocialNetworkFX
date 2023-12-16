@@ -2,6 +2,7 @@ package ro.ubbcluj.map.socialnetworkfx.repository;
 
 import ro.ubbcluj.map.socialnetworkfx.entity.Entity;
 import ro.ubbcluj.map.socialnetworkfx.exception.RepositoryException;
+import ro.ubbcluj.map.socialnetworkfx.utility.Pageable;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ import java.util.Optional;
  * @param <ID> ID of the stored entity.
  * @param <E>  Entity stored.
  */
-public abstract class DBRepository<ID, E extends Entity<ID>> implements Repository<ID, E> {
+public abstract class DBRepository<ID, E extends Entity<ID>> extends Pageable<E> implements Repository<ID, E> {
     // URL of the database
     private static String DB_URL;
     // User credentials for the connection with the database
@@ -88,6 +89,17 @@ public abstract class DBRepository<ID, E extends Entity<ID>> implements Reposito
      * @return SQL Interrogation for updating rows in table.
      */
     protected abstract PreparedStatement statementUpdate(Connection connection, E entity) throws RepositoryException;
+
+    /**
+     * Returns the SQL Interrogation for retrieving the number of items from a specific page.
+     *
+     * @param connection Connection to the database.
+     * @param noOfItems  Number of items on the page.
+     * @param selectOffset Offset of selection.
+     * @return SQL Interrogation for retrieving the number of items from a specific page.
+     * @throws RepositoryException If something went wrong with the interrogation.
+     */
+    protected abstract PreparedStatement statementSelectOnPage(Connection connection, int noOfItems, int selectOffset) throws RepositoryException;
 
     /**
      * Connects to the database.
@@ -264,5 +276,35 @@ public abstract class DBRepository<ID, E extends Entity<ID>> implements Reposito
         }
 
         return Optional.empty();
+    }
+
+    @Override
+    public Iterable<E> getItemsOnPage() {
+        // Verifying if the number of items is -1.
+        // If so, we return all items of the repository.
+        if (this.noItemsPerPage == -1) {
+            return this.getAll();
+        }
+
+        List<E> entities = new ArrayList<>();
+
+        try (Connection connection = this.connect()) {
+            int selectOffset = (this.currentPage * this.noItemsPerPage);
+            try (PreparedStatement statement = this.statementSelectOnPage(connection, this.noItemsPerPage, selectOffset)) {
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    while (resultSet.next()) {
+                        entities.add(this.extractFromResultSet(resultSet));
+                    }
+                } catch (SQLException sqlException) {
+                    throw new RepositoryException(sqlException.getMessage());
+                }
+            } catch (SQLException sqlException) {
+                throw new RepositoryException(sqlException.getMessage());
+            }
+        } catch (SQLException sqlException) {
+            throw new RepositoryException(sqlException.getMessage());
+        }
+
+        return entities;
     }
 }

@@ -1,0 +1,12 @@
+#mascotImage {
+    -fx-border-width: 2px;
+    -fx-border-style: solid;
+    -fx-border-color: black;
+}
+
+#loginBox {
+    -fx-background-color: linear-gradient(#38a8ff, #c5cbff);
+    -fx-border-width: 1px;
+    -fx-border-style: dotted;
+    -fx-border-color: black;
+}
