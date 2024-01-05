@@ -7,8 +7,8 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.*?>
 <?import java.net.URL?>
-<AnchorPane maxHeight="900.0" maxWidth="1200.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0"
-            prefWidth="1200.0" xmlns="http://javafx.com/javafx/17.0.6" xmlns:fx="http://javafx.com/fxml/1"
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" maxHeight="900.0" maxWidth="1200.0" minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/17.0.6"
             fx:controller="ro.ubbcluj.map.socialnetworkfx.controllers.UserInterface.UserInterfaceController"
             fx:id="userInterfaceLayout">
     <HBox alignment="CENTER" layoutX="18.0" layoutY="14.0" maxHeight="-Infinity" maxWidth="-Infinity"

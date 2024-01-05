@@ -250,7 +250,7 @@ public class Service implements Observable<SocialNetworkEvent> {
             }
 
             // Sending an event for the observers.
-            this.notify(new FriendshipEvent(EventType.ADD_FRIENDSHIP, null, new Tuple<>(id1, id2)));
+            this.notify(new FriendshipEvent(EventType.ADD_FRIENDSHIP, null, friendship));
         } catch (ValidatorException | RepositoryException exception) {
             throw new ServiceException("Couldn't add friendship.", exception);
         }
@@ -284,7 +284,7 @@ public class Service implements Observable<SocialNetworkEvent> {
         }
 
         // Notifying the observers.
-        this.notify(new FriendshipEvent(EventType.REMOVE_FRIENDSHIP, new Tuple<>(id1, id2), null));
+        this.notify(new FriendshipEvent(EventType.REMOVE_FRIENDSHIP, friendship.get(), null));
 
         // Returning the deleted friendship.
         return friendship.get();
@@ -555,13 +555,13 @@ public class Service implements Observable<SocialNetworkEvent> {
      */
     public List<User> getUsersFromPage(int page, int noOfUsers) throws ServiceException {
         ((UserDBRepository) this.userRepository).setCurrentPage(page);
-        ((UserDBRepository) this.userRepository).setNoItems(noOfUsers);
+        ((UserDBRepository) this.userRepository).setNoItemsPerPage(noOfUsers);
         return (List<User>) ((UserDBRepository) this.userRepository).getItemsOnPage();
     }
 
     public List<User> getFriendsFromPage(int page, int noOfUsers, User user) throws ServiceException {
         ((FriendshipDBRepository) this.friendshipRepository).setCurrentPage(page);
-        ((FriendshipDBRepository) this.friendshipRepository).setNoItems(noOfUsers);
+        ((FriendshipDBRepository) this.friendshipRepository).setNoItemsPerPage(noOfUsers);
         return ((FriendshipDBRepository) this.friendshipRepository).getFriendsFromPage(page, noOfUsers, user.getId());
     }
 

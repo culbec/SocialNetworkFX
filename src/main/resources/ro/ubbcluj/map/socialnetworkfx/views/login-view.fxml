@@ -7,8 +7,8 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 <?import java.net.URL?>
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
-            prefWidth="800.0" xmlns="http://javafx.com/javafx/17.0.6" xmlns:fx="http://javafx.com/fxml/1"
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="400.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17.0.6"
             fx:controller="ro.ubbcluj.map.socialnetworkfx.controllers.LoginController">
     <ImageView fx:id="mascotImage" fitHeight="230.0" fitWidth=" 211.0" layoutX="55.0" layoutY="69.0" pickOnBounds="true"
                preserveRatio="true">

@@ -6,22 +6,29 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import ro.ubbcluj.map.socialnetworkfx.controllers.AdminInterface.AdminController;
-import ro.ubbcluj.map.socialnetworkfx.controllers.Controller;
 import ro.ubbcluj.map.socialnetworkfx.controllers.PopupAlert;
 import ro.ubbcluj.map.socialnetworkfx.entity.Message;
 import ro.ubbcluj.map.socialnetworkfx.entity.ReplyMessage;
-import ro.ubbcluj.map.socialnetworkfx.entity.Tuple;
 import ro.ubbcluj.map.socialnetworkfx.entity.User;
 import ro.ubbcluj.map.socialnetworkfx.events.FriendshipEvent;
 import ro.ubbcluj.map.socialnetworkfx.events.MessageEvent;
 import ro.ubbcluj.map.socialnetworkfx.events.SocialNetworkEvent;
 import ro.ubbcluj.map.socialnetworkfx.events.UserEvent;
-import ro.ubbcluj.map.socialnetworkfx.service.Service;
+import ro.ubbcluj.map.socialnetworkfx.service.IService;
+import ro.ubbcluj.map.socialnetworkfx.service.ServiceFriendship;
+import ro.ubbcluj.map.socialnetworkfx.service.ServiceMessage;
+import ro.ubbcluj.map.socialnetworkfx.service.ServiceUser;
+import ro.ubbcluj.map.socialnetworkfx.utility.MessageDTO;
 import ro.ubbcluj.map.socialnetworkfx.utility.observer.Observer;
 
 import java.util.List;
+import java.util.UUID;
 
-public class MessageAreaController extends Controller implements Observer<SocialNetworkEvent> {
+public class MessageAreaController implements Observer<SocialNetworkEvent> {
+    // Current page.
+    int page = 0;
+    // Number of items per page.
+    int numberOfItems = -1;
     @FXML
     private TableView<User> friendTableView;
     @FXML
@@ -33,40 +40,38 @@ public class MessageAreaController extends Controller implements Observer<Social
     @FXML
     private TextField numberOfFriends;
     @FXML
-    private ListView<Message> messageListView;
+    private ListView<MessageDTO> messageListView;
     @FXML
     private TextArea messageTextArea;
-
-    // Current page.
-    int page = 0;
-
-    // Number of items per page.
-    int numberOfItems = -1;
-
     // User of the layout.
     private User user;
-
-    public User getUser() {
-        return user;
-    }
+    // Service dependencies.
+    private ServiceUser serviceUser;
+    private ServiceFriendship serviceFriendship;
+    private ServiceMessage serviceMessage;
 
     public void setUser(User user) {
         this.user = user;
     }
 
-    @Override
-    public void initController(Service service) {
-        super.initController(service);
+    public void initController(IService serviceUser, IService serviceFriendship, IService serviceMessage) {
+        // Setting the service dependencies.
+        this.serviceUser = (ServiceUser) serviceUser;
+        this.serviceFriendship = (ServiceFriendship) serviceFriendship;
+        this.serviceMessage = (ServiceMessage) serviceMessage;
 
         // Initializing the model of the table view and the list view.
-        this.initializeMessageModel();
+        this.initializeFriendModel();
     }
 
-    private void initializeMessageModel() {
+    private void initializeFriendModel() {
         // Enabling cell selection on the user table view.
         this.friendTableView.getSelectionModel().setCellSelectionEnabled(true);
 
-        // Setting selection mode to multiple.
+        // Setting the selection policy of the messages to be single selection for the message list view.
+        this.messageListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+
+        // Setting selection mode to single for the friend list view.
         this.friendTableView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
         // Disabling the possibility of column resize over the grid.
@@ -80,14 +85,14 @@ public class MessageAreaController extends Controller implements Observer<Social
         // Enabling CTRL-C copying.
         AdminController.enableCellCopy(this.friendTableView);
 
-        if (this.service != null) {
-            // Retrieving the user list as an observable one.
-            // This occurs for the fact that anyone in the app may want to update itself based on the contents of the list.
-            ObservableList<User> friendObservableList = FXCollections.observableList(this.service.getFriendsOf(user.getId()));
+        // Retrieving the user list as an observable one.
+        // This occurs for the fact that anyone in the app may want to update itself based on the contents of the list.
+        List<UUID> friendIds = this.serviceFriendship.getFriendIdsOf(user.getId());
+        List<User> friends = this.serviceUser.getFriends(friendIds);
+        ObservableList<User> friendObservableList = FXCollections.observableArrayList(friends);
 
-            // Setting the items of the table view based on the observable list contents.
-            this.friendTableView.setItems(friendObservableList);
-        }
+        // Setting the items of the table view based on the observable list contents.
+        this.friendTableView.setItems(friendObservableList);
 
         // Setting the behavior of user selection in the table.
         this.friendTableView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldUser, newUser) -> {
@@ -96,28 +101,36 @@ public class MessageAreaController extends Controller implements Observer<Social
                 return;
             }
 
-            // Getting the list of messages between the current user and the selected user.
-            List<Message> messageList = this.service.getMessagesBetweenUsers(this.user, newUser);
+            this.initializeMessageModel(newUser);
 
-            // Clearing the list view.
-            this.messageListView.getItems().clear();
-
-            // Adding the messages to the list view.
-            for (Message message : messageList) {
-                this.messageListView.getItems().add(message);
-            }
         });
+    }
 
-        // Setting the selection policy of the messages to be single selection.
-        this.messageListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+    /**
+     * Initializes the message model to contain messages between {@code a selected user and} {@code our user}.
+     *
+     * @param selectedUser User selected in the friend table.
+     */
+    private void initializeMessageModel(User selectedUser) {
+        // Getting the list of messages between the current user and the selected user.
+        List<Message> messageList = this.serviceMessage.getMessagesBetweenUsers(this.user, selectedUser);
+
+        // Clearing the list view.
+        this.messageListView.getItems().clear();
+
+        // Adding the messages to the list view.
+        for (Message message : messageList) {
+            MessageDTO messageDTO = new MessageDTO(this.serviceUser.getUser(message.getFrom()), message);
+            this.messageListView.getItems().add(messageDTO);
+        }
     }
 
     private List<User> getFriendsFromPage(int pageNumber, int numberOfItems) {
         if (pageNumber < 0 || numberOfItems < 0) {
-            return this.service.getFriendsOf(this.user.getId());
+            return this.serviceUser.getFriends(this.serviceFriendship.getFriendIdsOf(user.getId()));
         }
 
-        return this.service.getFriendsFromPage(pageNumber, numberOfItems, this.user);
+        return this.serviceFriendship.getFriendsFromPage(pageNumber, numberOfItems, this.user);
     }
 
     public void numberOfFriendsAction() {
@@ -209,7 +222,7 @@ public class MessageAreaController extends Controller implements Observer<Social
             Message message = new Message(this.user.getId(), List.of(selectedUser.getId()), this.messageTextArea.getText());
 
             // Sending the message.
-            this.service.sendMessage(message);
+            this.serviceMessage.sendMessage(message);
 
             // Clearing the message text area.
             this.messageTextArea.clear();
@@ -218,13 +231,13 @@ public class MessageAreaController extends Controller implements Observer<Social
         }
 
         // If a message is selected, then we reply to that message.
-        Message selectedMessage = this.messageListView.getSelectionModel().getSelectedItem();
+        Message selectedMessage = this.messageListView.getSelectionModel().getSelectedItem().getMessage();
 
         // Creating the reply message.
         ReplyMessage replyMessage = new ReplyMessage(this.user.getId(), List.of(selectedMessage.getFrom()), this.messageTextArea.getText(), selectedMessage.getId());
 
         // Sending the reply message.
-        this.service.sendMessage(replyMessage);
+        this.serviceMessage.sendMessage(replyMessage);
 
         // Clearing the message text area.
         this.messageTextArea.clear();
@@ -237,19 +250,31 @@ public class MessageAreaController extends Controller implements Observer<Social
 
             switch (userEvent.getEventType()) {
                 case ADD_USER -> {
-                    if (this.service.getFriendsOf(user.getId()).contains(userEvent.getNewUser())) {
+                    if (this.serviceFriendship.getFriendIdsOf(user.getId()).contains(userEvent.getNewUser().getId())) {
                         this.friendTableView.getItems().add(userEvent.getNewUser());
                     }
                 }
                 case REMOVE_USER -> {
-                    if (this.service.getFriendsOf(user.getId()).contains(userEvent.getOldUser())) {
+                    if (this.serviceFriendship.getFriendIdsOf(user.getId()).contains(userEvent.getOldUser().getId())) {
+                        if (this.friendTableView.getSelectionModel().getSelectedItem().equals(userEvent.getOldUser())) {
+                            this.messageListView.getItems().clear();
+                        }
                         this.friendTableView.getItems().remove(userEvent.getOldUser());
-                        this.messageListView.getItems().clear();
                     }
                 }
                 case UPDATE_USER -> {
-                    if (this.service.getFriendsOf(user.getId()).contains(userEvent.getOldUser())) {
+                    if (this.serviceFriendship.getFriendIdsOf(user.getId()).contains(userEvent.getNewUser().getId())) {
                         this.friendTableView.getItems().set(this.friendTableView.getItems().indexOf(userEvent.getOldUser()), userEvent.getNewUser());
+
+                        if (this.friendTableView.getSelectionModel().getSelectedItem().equals(userEvent.getNewUser())) {
+                            // Updating the users for each DTO that contains the specific user if that user is selected.
+                            this.messageListView.getItems().stream()
+                                    .filter(messageDTO -> messageDTO.getUser().equals(userEvent.getOldUser()))
+                                    .forEach(messageDTO -> messageDTO.setUser(userEvent.getNewUser()));
+
+                            // Refreshing the list view to present the changes.
+                            this.messageListView.refresh();
+                        }
                     }
                 }
             }
@@ -259,19 +284,26 @@ public class MessageAreaController extends Controller implements Observer<Social
             FriendshipEvent friendshipEvent = (FriendshipEvent) event;
             switch (friendshipEvent.getEventType()) {
                 case ADD_FRIENDSHIP -> {
-                    if (friendshipEvent.getNewFriendship().getLeft().equals(this.user.getId())) {
-                        this.friendTableView.getItems().add(this.service.getUser(friendshipEvent.getNewFriendship().getRight()));
-                    } else if (friendshipEvent.getNewFriendship().getRight().equals(this.user.getId())) {
-                        this.friendTableView.getItems().add(this.service.getUser(friendshipEvent.getNewFriendship().getLeft()));
+                    if (friendshipEvent.getNewFriendship().getId().getLeft().equals(this.user.getId())) {
+                        this.friendTableView.getItems().add(this.serviceUser.getUser(friendshipEvent.getNewFriendship().getId().getRight()));
+                    } else if (friendshipEvent.getNewFriendship().getId().getRight().equals(this.user.getId())) {
+                        this.friendTableView.getItems().add(this.serviceUser.getUser(friendshipEvent.getNewFriendship().getId().getLeft()));
                     }
                 }
                 case REMOVE_FRIENDSHIP -> {
-                    if (friendshipEvent.getOldFriendship().getLeft().equals(this.user.getId())) {
-                        this.friendTableView.getItems().remove(this.service.getUser(friendshipEvent.getOldFriendship().getRight()));
-                        this.messageListView.getItems().clear();
-                    } else if (friendshipEvent.getOldFriendship().getRight().equals(this.user.getId())) {
-                        this.friendTableView.getItems().remove(this.service.getUser(friendshipEvent.getOldFriendship().getLeft()));
-                        this.messageListView.getItems().clear();
+                    User selectedUser = this.friendTableView.getSelectionModel().getSelectedItem();
+                    if (friendshipEvent.getOldFriendship().getId().getLeft().equals(this.user.getId())) {
+                        // Clearing the message list view if the removed friend was selected.
+                        if (selectedUser != null && selectedUser.getId().equals(friendshipEvent.getOldFriendship().getId().getRight())) {
+                            this.messageListView.getItems().clear();
+                        }
+                        this.friendTableView.getItems().remove(this.serviceUser.getUser(friendshipEvent.getOldFriendship().getId().getRight()));
+                    } else if (friendshipEvent.getOldFriendship().getId().getRight().equals(this.user.getId())) {
+                        // Clearing the message list view if the removed friend was selected.
+                        if (selectedUser != null && selectedUser.getId().equals(friendshipEvent.getOldFriendship().getId().getLeft())) {
+                            this.messageListView.getItems().clear();
+                        }
+                        this.friendTableView.getItems().remove(this.serviceUser.getUser(friendshipEvent.getOldFriendship().getId().getLeft()));
                     }
                 }
             }
@@ -281,7 +313,8 @@ public class MessageAreaController extends Controller implements Observer<Social
             MessageEvent messageEvent = (MessageEvent) event;
 
             if (messageEvent.getMessage().getTo().contains(this.user.getId()) || messageEvent.getMessage().getFrom().equals(this.user.getId())) {
-                this.messageListView.getItems().add(messageEvent.getMessage());
+                MessageDTO messageDTO = new MessageDTO(this.serviceUser.getUser(messageEvent.getMessage().getFrom()), messageEvent.getMessage());
+                this.messageListView.getItems().add(messageDTO);
             }
         }
     }

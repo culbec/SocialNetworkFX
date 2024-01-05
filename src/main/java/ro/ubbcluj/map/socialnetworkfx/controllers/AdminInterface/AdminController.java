@@ -30,11 +30,11 @@ import java.util.TreeMap;
 public class AdminController {
     // Popup headers and texts.
     private static final Map<PopupEnum, Tuple<String, String>> POPUPS = new HashMap<>();
-    // Service dependency.
-    private Service service;
     // Parent Map that stores different loaders for different layouts.
     @FXML
     private final Map<String, Parent> layouts = new TreeMap<>();
+    // Service dependency.
+    private Service service;
     // FXML elements.
     @FXML
     private BorderPane mainLayout;
@@ -52,13 +52,14 @@ public class AdminController {
         MessageDBRepository messageDBRepository = new MessageDBRepository(DB_URL, USERNAME, PASSWORD);
 
         // Returning the service.
-        this.service =  new Service(userDBRepository, friendshipDBRepository, friendRequestDBRepository, messageDBRepository);
+        this.service = new Service(userDBRepository, friendshipDBRepository, friendRequestDBRepository, messageDBRepository);
 
         this.initController(service);
     }
 
     /**
      * Generates 20 random users and adds them to the database.
+     *
      * @param service Service to add the users to.
      */
     public static void generateRandomUsers(Service service) {
@@ -86,20 +87,6 @@ public class AdminController {
             service.addFriendship(service.getUsers().get(3).getId(), service.getUsers().get(2).getId());
             service.addFriendship(service.getUsers().get(4).getId(), service.getUsers().get(3).getId());
         }
-    }
-
-    public void initController(Service service) throws IOException {
-        // Initializing the service dependency.
-        this.service = service;
-
-        // Trying to add new users.
-        generateRandomUsers(service);
-
-        // Adding different loaders to the main app.
-        this.addLayouts();
-
-        // Adding popup headers and texts.
-        addPopups();
     }
 
     /**
@@ -181,6 +168,20 @@ public class AdminController {
                 tableView.getSelectionModel().clearSelection();
             }
         });
+    }
+
+    public void initController(Service service) throws IOException {
+        // Initializing the service dependency.
+        this.service = service;
+
+        // Trying to add new users.
+        generateRandomUsers(service);
+
+        // Adding different loaders to the main app.
+        this.addLayouts();
+
+        // Adding popup headers and texts.
+        addPopups();
     }
 
     /**

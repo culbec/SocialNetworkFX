@@ -11,6 +11,7 @@ import javafx.stage.Stage;
 import ro.ubbcluj.map.socialnetworkfx.SocialNetworkApplication;
 import ro.ubbcluj.map.socialnetworkfx.controllers.PopupAlert;
 import ro.ubbcluj.map.socialnetworkfx.entity.FriendRequest;
+import ro.ubbcluj.map.socialnetworkfx.entity.Friendship;
 import ro.ubbcluj.map.socialnetworkfx.entity.Tuple;
 import ro.ubbcluj.map.socialnetworkfx.entity.User;
 import ro.ubbcluj.map.socialnetworkfx.events.FriendshipEvent;
@@ -331,9 +332,9 @@ public class FriendshipController implements Observer<SocialNetworkEvent> {
      *
      * @param newFriendship Friendship that encapsulates the two friends.
      */
-    private void addFriendList(Tuple<UUID, UUID> newFriendship) {
-        User friend1 = this.service.getUser(newFriendship.getLeft());
-        User friend2 = this.service.getUser(newFriendship.getRight());
+    private void addFriendList(Friendship newFriendship) {
+        User friend1 = this.service.getUser(newFriendship.getId().getLeft());
+        User friend2 = this.service.getUser(newFriendship.getId().getRight());
 
         if (this.userComboBox.getValue().equals(friend1)) {
             this.friendsListView.getItems().add(friend2);
@@ -347,9 +348,9 @@ public class FriendshipController implements Observer<SocialNetworkEvent> {
      *
      * @param oldFriendship Friendship that encapsulates the two old friends.
      */
-    private void removeFriendList(Tuple<UUID, UUID> oldFriendship) {
-        User friend1 = this.service.getUser(oldFriendship.getLeft());
-        User friend2 = this.service.getUser(oldFriendship.getRight());
+    private void removeFriendList(Friendship oldFriendship) {
+        User friend1 = this.service.getUser(oldFriendship.getId().getLeft());
+        User friend2 = this.service.getUser(oldFriendship.getId().getRight());
 
         if (this.userComboBox.getValue().equals(friend1)) {
             this.friendsListView.getItems().remove(friend2);

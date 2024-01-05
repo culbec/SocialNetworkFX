@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class RunTests {
-    public static void main(String[] args) throws RepositoryException {
+    public static void main(String[] args) throws RepositoryException, InterruptedException {
         TestEntity.run();
         TestRepository.run();
         TestValidator.run();

@@ -5,23 +5,25 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.BorderPane;
 import ro.ubbcluj.map.socialnetworkfx.controllers.AdminInterface.AdminController;
-import ro.ubbcluj.map.socialnetworkfx.controllers.Controller;
 import ro.ubbcluj.map.socialnetworkfx.controllers.PopupAlert;
 import ro.ubbcluj.map.socialnetworkfx.entity.Message;
 import ro.ubbcluj.map.socialnetworkfx.entity.User;
 import ro.ubbcluj.map.socialnetworkfx.events.SocialNetworkEvent;
 import ro.ubbcluj.map.socialnetworkfx.events.UserEvent;
 import ro.ubbcluj.map.socialnetworkfx.exception.ServiceException;
-import ro.ubbcluj.map.socialnetworkfx.service.Service;
+import ro.ubbcluj.map.socialnetworkfx.service.*;
 import ro.ubbcluj.map.socialnetworkfx.utility.observer.Observer;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class UserAreaController extends Controller implements Observer<SocialNetworkEvent> {
+public class UserAreaController implements Observer<SocialNetworkEvent> {
+    // Current page.
+    int page = 0;
+    // Number of items per page.
+    int numberOfItems = -1;
     @FXML
     private TableView<User> userTableView;
     @FXML
@@ -34,15 +36,12 @@ public class UserAreaController extends Controller implements Observer<SocialNet
     private TextArea messageTextArea;
     @FXML
     private TextField numberOfUsers;
-
-    // Current page.
-    int page = 0;
-
-    // Number of items per page.
-    int numberOfItems = -1;
-
     // User of the layout.
     private User user;
+    // Service dependencies.
+    private ServiceUser serviceUser;
+    private ServiceFriendRequest serviceFriendRequest;
+    private ServiceMessage serviceMessage;
 
     public User getUser() {
         return user;
@@ -52,9 +51,11 @@ public class UserAreaController extends Controller implements Observer<SocialNet
         this.user = user;
     }
 
-    @Override
-    public void initController(Service service) {
-        super.initController(service);
+    public void initController(IService serviceUser, IService serviceFriendRequest, IService serviceMessage) {
+        // Setting the service dependencies.
+        this.serviceUser = (ServiceUser) serviceUser;
+        this.serviceFriendRequest = (ServiceFriendRequest) serviceFriendRequest;
+        this.serviceMessage = (ServiceMessage) serviceMessage;
 
         // Initializing the model of the table view.
         this.initializeUserModel();
@@ -78,10 +79,10 @@ public class UserAreaController extends Controller implements Observer<SocialNet
         // Enabling CTRL-C copying.
         AdminController.enableCellCopy(this.userTableView);
 
-        if (this.service != null) {
+        if (this.serviceUser != null) {
             // Retrieving the user list as an observable one.
             // This occurs for the fact that anyone in the app may want to update itself based on the contents of the list.
-            ObservableList<User> userObservableList = FXCollections.observableList(this.service.getUsers());
+            ObservableList<User> userObservableList = FXCollections.observableList(this.serviceUser.getUsers());
 
             // Setting the items of the table view based on the observable list contents.
             this.userTableView.setItems(userObservableList);
@@ -106,7 +107,7 @@ public class UserAreaController extends Controller implements Observer<SocialNet
 
         Message message = new Message(this.user.getId(), ids, messageTextArea.getText());
         try {
-            this.service.sendMessage(message);
+            this.serviceMessage.sendMessage(message);
             PopupAlert.showInformation(null, Alert.AlertType.CONFIRMATION, "Message sent successfully!", "");
         } catch (ServiceException sE) {
             PopupAlert.showInformation(null, Alert.AlertType.ERROR, "Something went wrong!", sE.getMessage());
@@ -115,10 +116,10 @@ public class UserAreaController extends Controller implements Observer<SocialNet
 
     private List<User> getUsersFromPage(int pageNumber, int numberOfItems) {
         if (pageNumber < 0 || numberOfItems < 0) {
-            return this.service.getUsers();
+            return this.serviceUser.getUsers();
         }
 
-        return this.service.getUsersFromPage(pageNumber, numberOfItems);
+        return this.serviceUser.getUsersFromPage(pageNumber, numberOfItems);
     }
 
     public void numberOfUsersAction() {
@@ -200,7 +201,7 @@ public class UserAreaController extends Controller implements Observer<SocialNet
 
         selectedUsers.forEach(selectedUser -> {
             try {
-                this.service.sendFriendRequest(this.user, selectedUser);
+                this.serviceFriendRequest.sendFriendRequest(this.user, selectedUser);
                 PopupAlert.showInformation(null, Alert.AlertType.CONFIRMATION, "Friend request(s) sent successfully!", "");
             } catch (ServiceException sE) {
                 PopupAlert.showInformation(null, Alert.AlertType.ERROR, "Something went wrong!", sE.getMessage());

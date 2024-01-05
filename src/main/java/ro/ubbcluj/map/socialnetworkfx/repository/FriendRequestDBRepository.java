@@ -6,6 +6,8 @@ import ro.ubbcluj.map.socialnetworkfx.exception.RepositoryException;
 
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class FriendRequestDBRepository extends DBRepository<Tuple<Tuple<UUID, UUID>, LocalDateTime>, FriendRequest> {
@@ -172,5 +174,32 @@ public class FriendRequestDBRepository extends DBRepository<Tuple<Tuple<UUID, UU
             throw new RepositoryException(sqlException.getMessage());
         }
         return false;
+    }
+
+    /**
+     * @param userId User ID to find the pending requests to.
+     * @return A list of pending friend requests to the user with {@code userId}.
+     */
+    public List<FriendRequest> getPendingRequestsTo(UUID userId) {
+        String sql = "select * from friendrequests where id_user2 = ? and status = ?";
+        try (Connection connection = this.connect()) {
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                statement.setObject(1, userId);
+                statement.setString(2, "pending");
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    List<FriendRequest> friendRequests = new ArrayList<>();
+                    while(resultSet.next()) {
+                        friendRequests.add(this.extractFromResultSet(resultSet));
+                    }
+                    return friendRequests;
+                } catch (SQLException sqlException) {
+                    throw new RepositoryException(sqlException.getMessage());
+                }
+            } catch (SQLException sqlException) {
+                throw new RepositoryException(sqlException.getMessage());
+            }
+        } catch (SQLException sqlException) {
+            throw new RepositoryException(sqlException.getMessage());
+        }
     }
 }

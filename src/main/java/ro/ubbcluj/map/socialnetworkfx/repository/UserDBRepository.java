@@ -1,6 +1,5 @@
 package ro.ubbcluj.map.socialnetworkfx.repository;
 
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import ro.ubbcluj.map.socialnetworkfx.entity.User;
 import ro.ubbcluj.map.socialnetworkfx.exception.RepositoryException;

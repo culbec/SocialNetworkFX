@@ -4,40 +4,34 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="460.0"
-            prefWidth="1000.0" stylesheets="@../../styles/default-style.css"
-            xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1"
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="460.0" prefWidth="1000.0"
+            stylesheets="@../../styles/default-style.css" xmlns="http://javafx.com/javafx/11.0.14-internal"
             fx:controller="ro.ubbcluj.map.socialnetworkfx.controllers.UserInterface.FriendAreaController">
     <left>
         <VBox BorderPane.alignment="CENTER">
-            <children>
-                <TableView fx:id="friendTableView" prefHeight="408.0" prefWidth="550.0">
-                    <columns>
-                        <TableColumn fx:id="firstNameColumn" prefWidth="155.0" text="First Name"/>
-                        <TableColumn fx:id="lastNameColumn" prefWidth="203.0" text="Last Name"/>
-                        <TableColumn fx:id="emailColumn" prefWidth="239.0" text="Email"/>
-                    </columns>
-                </TableView>
-                <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
-                    <children>
-                        <Button mnemonicParsing="false" onAction="#previousPageAction" text="&lt;"/>
-                        <HBox alignment="CENTER" spacing="5.0">
-                            <children>
-                                <TextField fx:id="numberOfFriends" onAction="#numberOfFriendsAction">
-                                    <HBox.margin>
-                                        <Insets/>
-                                    </HBox.margin>
-                                </TextField>
-                                <Label text="Users per page"/>
-                            </children>
-                        </HBox>
-                        <Button mnemonicParsing="false" onAction="#nextPageAction" text="&gt;"/>
-                    </children>
-                </HBox>
-            </children>
             <padding>
                 <Insets bottom="10.0" left="20.0" right="20.0" top="10.0"/>
             </padding>
+            <TableView fx:id="friendTableView" prefHeight="408.0" prefWidth="550.0">
+                <columns>
+                    <TableColumn fx:id="firstNameColumn" prefWidth="155.0" text="First Name"/>
+                    <TableColumn fx:id="lastNameColumn" prefWidth="203.0" text="Last Name"/>
+                    <TableColumn fx:id="emailColumn" prefWidth="239.0" text="Email"/>
+                </columns>
+            </TableView>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
+                <Button mnemonicParsing="false" onAction="#previousPageAction" text="&lt;"/>
+                <HBox alignment="CENTER" spacing="5.0">
+                    <TextField fx:id="numberOfFriends" onAction="#numberOfFriendsAction">
+                        <HBox.margin>
+                            <Insets/>
+                        </HBox.margin>
+                    </TextField>
+                    <Label text="Users per page"/>
+                </HBox>
+                <Button mnemonicParsing="false" onAction="#nextPageAction" text="&gt;"/>
+            </HBox>
         </VBox>
     </left>
     <right>
@@ -71,18 +65,16 @@
                 </padding>
             </VBox>
             <VBox alignment="CENTER" spacing="10.0">
-                <children>
-                    <Button mnemonicParsing="false" onAction="#removeFriendAction" text="Remove friend">
-                        <font>
-                            <Font name="JetBrainsMonoNL NFP Regular" size="14.0"/>
-                        </font>
-                    </Button>
-                    <Label prefHeight="0.0" prefWidth="366.0" text="* Select a users (or users) to remove.">
-                        <font>
-                            <Font name="JetBrainsMonoNL NFP Regular" size="12.0"/>
-                        </font>
-                    </Label>
-                </children>
+                <Button mnemonicParsing="false" onAction="#removeFriendAction" text="Remove friend">
+                    <font>
+                        <Font name="JetBrainsMonoNL NFP Regular" size="14.0"/>
+                    </font>
+                </Button>
+                <Label prefHeight="0.0" prefWidth="366.0" text="* Select a users (or users) to remove.">
+                    <font>
+                        <Font name="JetBrainsMonoNL NFP Regular" size="12.0"/>
+                    </font>
+                </Label>
             </VBox>
             <padding>
                 <Insets left="20.0" right="20.0"/>

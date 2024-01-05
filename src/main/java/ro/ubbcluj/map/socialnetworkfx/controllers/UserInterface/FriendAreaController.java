@@ -1,12 +1,12 @@
 package ro.ubbcluj.map.socialnetworkfx.controllers.UserInterface;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import ro.ubbcluj.map.socialnetworkfx.controllers.AdminInterface.AdminController;
-import ro.ubbcluj.map.socialnetworkfx.controllers.Controller;
 import ro.ubbcluj.map.socialnetworkfx.controllers.PopupAlert;
 import ro.ubbcluj.map.socialnetworkfx.entity.FriendRequest;
 import ro.ubbcluj.map.socialnetworkfx.entity.User;
@@ -14,13 +14,22 @@ import ro.ubbcluj.map.socialnetworkfx.events.FriendRequestEvent;
 import ro.ubbcluj.map.socialnetworkfx.events.FriendshipEvent;
 import ro.ubbcluj.map.socialnetworkfx.events.SocialNetworkEvent;
 import ro.ubbcluj.map.socialnetworkfx.events.UserEvent;
-import ro.ubbcluj.map.socialnetworkfx.service.Service;
+import ro.ubbcluj.map.socialnetworkfx.service.IService;
+import ro.ubbcluj.map.socialnetworkfx.service.ServiceFriendRequest;
+import ro.ubbcluj.map.socialnetworkfx.service.ServiceFriendship;
+import ro.ubbcluj.map.socialnetworkfx.service.ServiceUser;
+import ro.ubbcluj.map.socialnetworkfx.utility.observer.Observable;
 import ro.ubbcluj.map.socialnetworkfx.utility.observer.Observer;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
-public class FriendAreaController extends Controller implements Observer<SocialNetworkEvent> {
+public class FriendAreaController implements Observer<SocialNetworkEvent> {
+    // Current page.
+    int page = 0;
+    // Number of items per page.
+    int numberOfItems = -1;
     @FXML
     private TableView<User> friendTableView;
     @FXML
@@ -33,15 +42,12 @@ public class FriendAreaController extends Controller implements Observer<SocialN
     private TextField numberOfFriends;
     @FXML
     private ListView<User> friendRequestsListView;
-
-    // Current page.
-    int page = 0;
-
-    // Number of items per page.
-    int numberOfItems = -1;
-
     // User of the layout.
     private User user;
+    // Service dependencies.
+    private ServiceUser serviceUser;
+    private ServiceFriendship serviceFriendship;
+    private ServiceFriendRequest serviceFriendRequest;
 
     public User getUser() {
         return user;
@@ -51,9 +57,11 @@ public class FriendAreaController extends Controller implements Observer<SocialN
         this.user = user;
     }
 
-    @Override
-    public void initController(Service service) {
-        super.initController(service);
+    public void initController(IService serviceUser, IService serviceFriendship, IService serviceFriendRequest) {
+        // Setting the service dependencies.
+        this.serviceUser = (ServiceUser) serviceUser;
+        this.serviceFriendship = (ServiceFriendship) serviceFriendship;
+        this.serviceFriendRequest = (ServiceFriendRequest) serviceFriendRequest;
 
         // Initializing the model of the table view and the list view.
         this.initializeFriendModel();
@@ -77,27 +85,26 @@ public class FriendAreaController extends Controller implements Observer<SocialN
         // Enabling CTRL-C copying.
         AdminController.enableCellCopy(this.friendTableView);
 
-        if (this.service != null) {
-            // Retrieving the user list as an observable one.
-            // This occurs for the fact that anyone in the app may want to update itself based on the contents of the list.
-            ObservableList<User> friendObservableList = FXCollections.observableList(this.service.getFriendsOf(user.getId()));
+        // Retrieving the user list as an observable one.
+        // This occurs for the fact that anyone in the app may want to update itself based on the contents of the list.
+        List<UUID> friendIds = this.serviceFriendship.getFriendIdsOf(user.getId());
+        List<User> friends = this.serviceUser.getFriends(friendIds);
+        ObservableList<User> friendObservableList = FXCollections.observableArrayList(friends);
+        this.friendTableView.setItems(friendObservableList);
 
-            // Setting the items of the table view based on the observable list contents.
-            this.friendTableView.setItems(friendObservableList);
-
-            // Setting the friend request list view.
-            List<FriendRequest> friendRequests = this.service.getFriendRequestsOfUser(user.getId());
-            List<User> friendRequestSenders = friendRequests.stream().map(friendRequest -> this.service.getUser(friendRequest.getIdFrom())).toList();
-            this.friendRequestsListView.getItems().addAll(friendRequestSenders);
-        }
+        // Setting the friend request list view.
+        List<FriendRequest> friendRequests = this.serviceFriendRequest.getFriendRequestsOfUser(user.getId());
+        List<User> friendRequestSenders = friendRequests.stream().map(friendRequest -> this.serviceUser.getUser(friendRequest.getIdFrom())).toList();
+        ObservableList<User> friendRequestObservableList = FXCollections.observableArrayList(friendRequestSenders);
+        this.friendRequestsListView.setItems(friendRequestObservableList);
     }
 
     private List<User> getFriendsFromPage(int pageNumber, int numberOfItems) {
         if (pageNumber < 0 || numberOfItems < 0) {
-            return this.service.getFriendsOf(this.user.getId());
+            return this.serviceUser.getFriends(this.serviceFriendship.getFriendIdsOf(user.getId()));
         }
 
-        return this.service.getFriendsFromPage(pageNumber, numberOfItems, this.user);
+        return this.serviceFriendship.getFriendsFromPage(pageNumber, numberOfItems, this.user);
     }
 
     public void numberOfFriendsAction() {
@@ -183,12 +190,12 @@ public class FriendAreaController extends Controller implements Observer<SocialN
 
         selectedUsers.forEach(selectedUser -> {
             // Getting the friend request.
-            Optional<FriendRequest> friendRequestOptional = this.service.getFriendRequestsOfUser(user.getId()).stream()
+            Optional<FriendRequest> friendRequestOptional = this.serviceFriendRequest.getFriendRequestsOfUser(user.getId()).stream()
                     .filter(friendRequest -> friendRequest.getIdFrom().equals(selectedUser.getId()))
                     .findFirst();
 
             // Removing the friend request from the database.
-            friendRequestOptional.ifPresent(friendRequest -> this.service.rejectFriendRequest(friendRequest));
+            friendRequestOptional.ifPresent(friendRequest -> this.serviceFriendRequest.rejectFriendRequest(friendRequest));
         });
 
         PopupAlert.showInformation(null, Alert.AlertType.CONFIRMATION, "Friend request(s) rejected!", "");
@@ -209,12 +216,12 @@ public class FriendAreaController extends Controller implements Observer<SocialN
 
         selectedUsers.forEach(selectedUser -> {
             // Getting the friend request.
-            Optional<FriendRequest> friendRequestOptional = this.service.getFriendRequestsOfUser(user.getId()).stream()
+            Optional<FriendRequest> friendRequestOptional = this.serviceFriendRequest.getFriendRequestsOfUser(user.getId()).stream()
                     .filter(friendRequest -> friendRequest.getIdFrom().equals(selectedUser.getId()))
                     .findFirst();
 
             // Removing the friend request from the database.
-            friendRequestOptional.ifPresent(friendRequest -> this.service.acceptFriendRequest(friendRequest));
+            friendRequestOptional.ifPresent(friendRequest -> this.serviceFriendRequest.acceptFriendRequest(friendRequest));
         });
 
         PopupAlert.showInformation(null, Alert.AlertType.CONFIRMATION, "Friend request(s) accepted!", "");
@@ -235,7 +242,7 @@ public class FriendAreaController extends Controller implements Observer<SocialN
 
         selectedUsers.forEach(selectedUser -> {
             // Removing the friend from the friend list.
-            this.service.removeFriendship(user.getId(), selectedUser.getId());
+            this.serviceFriendship.removeFriendship(user.getId(), selectedUser.getId());
         });
 
         PopupAlert.showInformation(null, Alert.AlertType.CONFIRMATION, "Friend(s) removed!", "");
@@ -243,22 +250,22 @@ public class FriendAreaController extends Controller implements Observer<SocialN
 
     @Override
     public void update(SocialNetworkEvent event) {
-        if(event.getClass().equals(UserEvent.class)) {
+        if (event.getClass().equals(UserEvent.class)) {
             UserEvent userEvent = (UserEvent) event;
 
             switch (userEvent.getEventType()) {
                 case ADD_USER -> {
-                    if (this.service.getFriendsOf(user.getId()).contains(userEvent.getNewUser())) {
+                    if (this.serviceFriendship.getFriendIdsOf(user.getId()).contains(userEvent.getNewUser().getId())) {
                         this.friendTableView.getItems().add(userEvent.getNewUser());
                     }
                 }
                 case REMOVE_USER -> {
-                    if (this.service.getFriendsOf(user.getId()).contains(userEvent.getOldUser())) {
+                    if (this.serviceFriendship.getFriendIdsOf(user.getId()).contains(userEvent.getOldUser().getId())) {
                         this.friendTableView.getItems().remove(userEvent.getOldUser());
                     }
                 }
                 case UPDATE_USER -> {
-                    if (this.service.getFriendsOf(user.getId()).contains(userEvent.getOldUser())) {
+                    if (this.serviceFriendship.getFriendIdsOf(user.getId()).contains(userEvent.getNewUser().getId())) {
                         this.friendTableView.getItems().set(this.friendTableView.getItems().indexOf(userEvent.getOldUser()), userEvent.getNewUser());
                     }
                 }
@@ -269,17 +276,17 @@ public class FriendAreaController extends Controller implements Observer<SocialN
             FriendshipEvent friendshipEvent = (FriendshipEvent) event;
             switch (friendshipEvent.getEventType()) {
                 case ADD_FRIENDSHIP -> {
-                    if (friendshipEvent.getNewFriendship().getLeft().equals(this.user.getId())) {
-                        this.friendTableView.getItems().add(this.service.getUser(friendshipEvent.getNewFriendship().getRight()));
-                    } else if (friendshipEvent.getNewFriendship().getRight().equals(this.user.getId())) {
-                        this.friendTableView.getItems().add(this.service.getUser(friendshipEvent.getNewFriendship().getLeft()));
+                    if (friendshipEvent.getNewFriendship().getId().getLeft().equals(this.user.getId())) {
+                        this.friendTableView.getItems().add(this.serviceUser.getUser(friendshipEvent.getNewFriendship().getId().getRight()));
+                    } else if (friendshipEvent.getNewFriendship().getId().getRight().equals(this.user.getId())) {
+                        this.friendTableView.getItems().add(this.serviceUser.getUser(friendshipEvent.getNewFriendship().getId().getLeft()));
                     }
                 }
                 case REMOVE_FRIENDSHIP -> {
-                    if (friendshipEvent.getOldFriendship().getLeft().equals(this.user.getId())) {
-                        this.friendTableView.getItems().remove(this.service.getUser(friendshipEvent.getOldFriendship().getRight()));
-                    } else if (friendshipEvent.getOldFriendship().getRight().equals(this.user.getId())) {
-                        this.friendTableView.getItems().remove(this.service.getUser(friendshipEvent.getOldFriendship().getLeft()));
+                    if (friendshipEvent.getOldFriendship().getId().getLeft().equals(this.user.getId())) {
+                        this.friendTableView.getItems().remove(this.serviceUser.getUser(friendshipEvent.getOldFriendship().getId().getRight()));
+                    } else if (friendshipEvent.getOldFriendship().getId().getRight().equals(this.user.getId())) {
+                        this.friendTableView.getItems().remove(this.serviceUser.getUser(friendshipEvent.getOldFriendship().getId().getLeft()));
                     }
                 }
             }
@@ -290,12 +297,13 @@ public class FriendAreaController extends Controller implements Observer<SocialN
             switch (friendRequestEvent.getEventType()) {
                 case ADD_FRIEND_REQUEST -> {
                     if (friendRequestEvent.getNewFriendRequest().getIdTo().equals(this.user.getId())) {
-                        this.friendRequestsListView.getItems().add(this.service.getUser(friendRequestEvent.getNewFriendRequest().getIdFrom()));
+                        this.friendRequestsListView.getItems().add(this.serviceUser.getUser(friendRequestEvent.getNewFriendRequest().getIdFrom()));
                     }
                 }
                 case REMOVE_FRIEND_REQUEST -> {
                     if (friendRequestEvent.getOldFriendRequest().getIdTo().equals(this.user.getId())) {
-                        this.friendRequestsListView.getItems().remove(this.service.getUser(friendRequestEvent.getOldFriendRequest().getIdFrom()));
+                        this.friendRequestsListView.getItems().remove(this.serviceUser.getUser(friendRequestEvent.getOldFriendRequest().getIdFrom()));
+                        this.serviceFriendship.addFriendship(friendRequestEvent.getOldFriendRequest().getIdFrom(), this.user.getId());
                     }
                 }
             }

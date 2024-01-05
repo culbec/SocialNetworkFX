@@ -6,16 +6,8 @@ public abstract class Pageable<E> {
     // Current page. Default value (until specified) = 0;
     protected int currentPage = 0;
 
-    public int getNoItems() {
-        return noItemsPerPage;
-    }
-
-    public void setNoItems(int noItemsPerPage) {
+    public void setNoItemsPerPage(int noItemsPerPage) {
         this.noItemsPerPage = noItemsPerPage;
-    }
-
-    public int getCurrentPage() {
-        return currentPage;
     }
 
     public void setCurrentPage(int currentPage) {
@@ -23,7 +15,6 @@ public abstract class Pageable<E> {
     }
 
     /**
-     *
      * @return Items of the current page, limited by noOfItemsPerPage.
      */
     public abstract Iterable<E> getItemsOnPage();

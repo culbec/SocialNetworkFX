@@ -93,8 +93,8 @@ public abstract class DBRepository<ID, E extends Entity<ID>> extends Pageable<E>
     /**
      * Returns the SQL Interrogation for retrieving the number of items from a specific page.
      *
-     * @param connection Connection to the database.
-     * @param noOfItems  Number of items on the page.
+     * @param connection   Connection to the database.
+     * @param noOfItems    Number of items on the page.
      * @param selectOffset Offset of selection.
      * @return SQL Interrogation for retrieving the number of items from a specific page.
      * @throws RepositoryException If something went wrong with the interrogation.

@@ -21,16 +21,22 @@
 
     -fx-cursor: crosshair;
     -fx-padding: 10 10 10 10;
+
+    -fx-effect: dropshadow(gaussian, #38a8ff, 10, 0, 0, 0);
 }
 
 .button:hover {
     -fx-background-color: #383b64;
+    -fx-scale-x: 0.95;
+    -fx-scale-y: 0.95;
+    -fx-rotate: 2;
+    -fx-effect: dropshadow(gaussian, #38a8ff, 20, 0, 0, 0);
 }
 
 .check-box .box {
     -fx-background-color: white;
-    -fx-border-color:grey;
-    -fx-border-radius:3px;
+    -fx-border-color: grey;
+    -fx-border-radius: 3px;
 }
 
 .check-box:selected .mark {
@@ -47,7 +53,7 @@
 
 .table-view .column-header {
     -fx-background-color: linear-gradient(#38a8ff, #c5cbff);
-    -fx-border-width: 0 1 1 0;
+    -fx-border-width: 1px;
     -fx-border-color: #000000;
 }
 

@@ -6,7 +6,9 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import ro.ubbcluj.map.socialnetworkfx.exception.ServiceException;
+import ro.ubbcluj.map.socialnetworkfx.service.IService;
 import ro.ubbcluj.map.socialnetworkfx.service.Service;
+import ro.ubbcluj.map.socialnetworkfx.service.ServiceUser;
 
 public class SignupController {
     @FXML
@@ -17,9 +19,9 @@ public class SignupController {
     private TextField emailField;
     @FXML
     private PasswordField passwordField;
-    private Service service;
+    private IService service;
 
-    public void initController(Service service) {
+    public void initController(IService service) {
         this.service = service;
     }
 
@@ -32,7 +34,7 @@ public class SignupController {
 
         // Trying to add the new user.
         try {
-            this.service.addUser(firstName, lastName, email, password);
+            ((ServiceUser) this.service).addUser(firstName, lastName, email, password);
         } catch (ServiceException sE) {
             PopupAlert.showInformation(null, Alert.AlertType.ERROR, "Cannot sign up!", sE.getMessage());
             Stage stage = (Stage) this.firstNameField.getScene().getWindow();

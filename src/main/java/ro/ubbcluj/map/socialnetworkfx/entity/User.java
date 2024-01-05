@@ -90,20 +90,21 @@ public class User extends Entity<UUID> {
     }
 
     /**
-     * Getter for the password of the user.
-     * @return Password of the user.
-     */
-    public String getPassword() {
-        return password;
-    }
-
-    /**
      * Setter for the email of the user.
      *
      * @param email New email of the user.
      */
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    /**
+     * Getter for the password of the user.
+     *
+     * @return Password of the user.
+     */
+    public String getPassword() {
+        return password;
     }
 
     public void setPassword(String password) {
