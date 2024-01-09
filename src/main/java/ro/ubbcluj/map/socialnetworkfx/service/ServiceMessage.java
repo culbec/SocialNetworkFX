@@ -1,6 +1,7 @@
 package ro.ubbcluj.map.socialnetworkfx.service;
 
 import ro.ubbcluj.map.socialnetworkfx.entity.Message;
+import ro.ubbcluj.map.socialnetworkfx.entity.ReplyMessage;
 import ro.ubbcluj.map.socialnetworkfx.entity.User;
 import ro.ubbcluj.map.socialnetworkfx.events.EventType;
 import ro.ubbcluj.map.socialnetworkfx.events.MessageEvent;
@@ -44,6 +45,16 @@ public class ServiceMessage implements IService {
     }
 
     /**
+     * Finds a message based on its ID.
+     * @param messageId ID of the message to be found.
+     * @return The message with the ID = {@code messageId}.
+     */
+    public Message getMessage(UUID messageId) {
+        Optional<Message> optionalMessage = this.messageRepository.getOne(messageId);
+        return optionalMessage.orElse(null);
+    }
+
+    /**
      * Sends a message from a user to other users.
      *
      * @param message Message to be sent.
@@ -54,7 +65,11 @@ public class ServiceMessage implements IService {
         try {
             this.messageRepository.save(message);
             // Notifying the observers.
-            this.notify(new MessageEvent(EventType.ADD_MESSAGE, message));
+            if (message.getClass().equals(Message.class)) {
+                this.notify(new MessageEvent(EventType.SEND_MESSAGE, message));
+            } else if (message.getClass().equals(ReplyMessage.class)) {
+                this.notify(new MessageEvent(EventType.REPLY_MESSAGE, message));
+            }
         } catch (RepositoryException repositoryException) {
             throw new ServiceException(repositoryException.getMessage(), repositoryException.getCause());
         }

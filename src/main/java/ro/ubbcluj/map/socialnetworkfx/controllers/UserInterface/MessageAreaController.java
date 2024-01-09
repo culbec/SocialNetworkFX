@@ -120,8 +120,14 @@ public class MessageAreaController implements Observer<SocialNetworkEvent> {
 
         // Adding the messages to the list view.
         for (Message message : messageList) {
-            MessageDTO messageDTO = new MessageDTO(this.serviceUser.getUser(message.getFrom()), message);
-            this.messageListView.getItems().add(messageDTO);
+            if(message.getClass().equals(Message.class)) {
+                MessageDTO messageDTO = new MessageDTO(this.serviceUser.getUser(message.getFrom()), message);
+                this.messageListView.getItems().add(messageDTO);
+            } else {
+                ReplyMessage replyMessage = (ReplyMessage) message;
+                MessageDTO messageDTO = new MessageDTO(this.serviceUser.getUser(replyMessage.getFrom()), this.serviceUser.getUser(replyMessage.getTo().get(0)), replyMessage, this.serviceMessage.getMessage(replyMessage.getMessage()));
+                this.messageListView.getItems().add(messageDTO);
+            }
         }
     }
 
@@ -213,6 +219,12 @@ public class MessageAreaController implements Observer<SocialNetworkEvent> {
             return;
         }
 
+        // Error if the user tries to reply to itself. (Development choice)
+        if (this.messageListView.getSelectionModel().getSelectedItem().getUser().equals(this.user)) {
+            PopupAlert.showInformation(null, Alert.AlertType.ERROR, "Something went wrong!", "Cannot send a message to yourself.");
+            return;
+        }
+
         // Case when the user only replies to a user, not to a message.
         if (this.messageListView.getSelectionModel().getSelectedItem() == null) {
             // Getting the selected user.
@@ -271,6 +283,9 @@ public class MessageAreaController implements Observer<SocialNetworkEvent> {
                             this.messageListView.getItems().stream()
                                     .filter(messageDTO -> messageDTO.getUser().equals(userEvent.getOldUser()))
                                     .forEach(messageDTO -> messageDTO.setUser(userEvent.getNewUser()));
+                            this.messageListView.getItems().stream()
+                                    .filter(messageDTO -> messageDTO.getReplyUser().equals(userEvent.getOldUser()))
+                                    .forEach(messageDTO -> messageDTO.setReplyUser(userEvent.getNewUser()));
 
                             // Refreshing the list view to present the changes.
                             this.messageListView.refresh();
@@ -313,8 +328,16 @@ public class MessageAreaController implements Observer<SocialNetworkEvent> {
             MessageEvent messageEvent = (MessageEvent) event;
 
             if (messageEvent.getMessage().getTo().contains(this.user.getId()) || messageEvent.getMessage().getFrom().equals(this.user.getId())) {
-                MessageDTO messageDTO = new MessageDTO(this.serviceUser.getUser(messageEvent.getMessage().getFrom()), messageEvent.getMessage());
-                this.messageListView.getItems().add(messageDTO);
+                switch (messageEvent.getEventType()) {
+                    case SEND_MESSAGE -> {
+                        MessageDTO messageDTO = new MessageDTO(this.serviceUser.getUser(messageEvent.getMessage().getFrom()), messageEvent.getMessage());
+                        this.messageListView.getItems().add(messageDTO);
+                    }
+                    case REPLY_MESSAGE -> {
+                        MessageDTO messageDTO = new MessageDTO(this.serviceUser.getUser(messageEvent.getMessage().getFrom()), this.serviceUser.getUser(messageEvent.getMessage().getTo().get(0)), messageEvent.getMessage(), this.serviceMessage.getMessage(((ReplyMessage)messageEvent.getMessage()).getMessage()));
+                        this.messageListView.getItems().add(messageDTO);
+                    }
+                }
             }
         }
     }

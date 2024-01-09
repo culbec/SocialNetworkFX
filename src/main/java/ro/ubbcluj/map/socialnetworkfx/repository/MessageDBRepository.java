@@ -170,7 +170,7 @@ public class MessageDBRepository extends DBRepository<UUID, Message> {
             return message;
         }
         // Returning a reply.
-        return new ReplyMessage(messageId, idSender, idReceivers, messageText, date.toLocalDateTime(), (UUID) replyId);
+        return new ReplyMessage(messageId, idSender, idReceivers, messageText, date.toLocalDateTime(), UUID.fromString(replyId.toString()));
 
     }
 

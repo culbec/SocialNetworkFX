@@ -523,7 +523,11 @@ public class Service implements Observable<SocialNetworkEvent> {
         try {
             this.messageRepository.save(message);
             // Notifying the observers.
-            this.notify(new MessageEvent(EventType.ADD_MESSAGE, message));
+            if (message.getClass().equals(Message.class)) {
+                this.notify(new MessageEvent(EventType.SEND_MESSAGE, message));
+            } else if (message.getClass().equals(ReplyMessage.class)) {
+                this.notify(new MessageEvent(EventType.REPLY_MESSAGE, message));
+            }
         } catch (RepositoryException repositoryException) {
             throw new ServiceException(repositoryException.getMessage(), repositoryException.getCause());
         }
