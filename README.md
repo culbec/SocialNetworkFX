@@ -1,11 +1,11 @@
 # Social Network Application
 
-This repository contains my project for the Advanced Methods of Programming course.
+This repository contains my project for the _Advanced Methods of Programming_ course.
 
-The project resembles a small social network application which allows authentication, messaging or friend requests between users.
+The project resembles a small social network application which allows **authentication**, **messaging** or **friend requests** between **users**.
 
 ## Technologies used
 
-- Java: code in which the application was written.
-- JavaFX, FXML, CSS: interactive GUI, with a splash of design.
-- PostgreSQL, BCrypt: data storage and password encryption.
+- **Java**: _code_ in which the application was written.
+- **JavaFX, FXML, CSS**: _interactive GUI_, with a splash of design.
+- **PostgreSQL, BCrypt**: _data storage_ and _password encryption_.
